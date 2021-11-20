@@ -7,7 +7,7 @@ This repository consists of the following projects:
 
 
 # Running the projects #
-Plugins are developed in Capella version 5.0.0, Build id: 202012021234.
+Plugins are developed in Capella version 5.0.0, Build id: 202012021234.\
 To run the projects put the content of *ExportedPlugins/* into *dropins/* folder of the Capella installation.
 Once the plugins are installed the **Embedded Server** button should appear in the upper bar.\
 Run the maven project in *OSLCAdapter/* folder: `mvn jetty:run-exploded`
