@@ -71,3 +71,4 @@ atlassian-ide-plugin.xml
 # Include exported plugins #
 #######################################
 !ExportedPlugins/*
+!ExportedPlugins/Development/*
