@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.emf.ecore.EObject;
 
 import capellaserver.domain.Element;
+import capellaserver.helpers.EObjectSerializer;
 import capellaserver.helpers.ServletHelper;
 import capellaserver.services.ElementService;
 import capellaserver.services.MappingService;
@@ -35,10 +36,14 @@ public class ResourceServlet extends HttpServlet {
     	ElementService elementService = new ElementService(request);
     	EObject capellaElement = elementService.getElementById(projectName, elementId);
     	
-		MappingService mappingService = new MappingService(linkBaseUrl);
-    	Element sysmlElement = mappingService.mapFromEObject(capellaElement);
+//		MappingService mappingService = new MappingService(linkBaseUrl);
+//    	Element sysmlElement = mappingService.mapFromEObject(capellaElement);
 
-    	ServletHelper.setOkResponse(response, sysmlElement);
+		response.setContentType("application/json");
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().println(EObjectSerializer.serializeEObjectToJson(capellaElement));
+    	
+    	//ServletHelper.setOkResponse(response, sysmlElement);
     }
 	
 }
