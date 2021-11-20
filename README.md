@@ -12,4 +12,4 @@ To run the projects put the content of *ExportedPlugins/* into *dropins/* folder
 Run the maven project in *OSLCAdapter/* folder: `mvn jetty:run-exploded`
 
 # Plugin development #
-In addition to the dependency on `javax.servelt-api` the CapellaServer also needs the `gson` library included ( see *ExportedPlugins/Development/* ) inside the *lib/* folder in the project.
+In addition to the dependency on `javax.servelt-api` the CapellaServer also needs the `gson` library included ( see *ExportedPlugins/Development/* ) inside the *lib/* folder of the plugin project.
