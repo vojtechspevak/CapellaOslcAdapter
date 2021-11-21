@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * Class providing reusable methods for servlets 
@@ -17,6 +19,7 @@ import com.google.gson.Gson;
 public class ServletHelper {
 	
 	private static final String CONTENT_TYPE = "application/json";
+	private static final String ENCODING_UTF_8 = "UTF-8";
 
 	/**
 	 * Sets ok response and serializes object to json as named parameter 
@@ -31,10 +34,10 @@ public class ServletHelper {
 
 		response.setContentType(CONTENT_TYPE);
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding(ENCODING_UTF_8);
 		response.getWriter().println("{ \""+ resultJsonAttrtName  +"\": " + resultJson + " }");
 	}
-
+	
 	/**
 	 * Sets ok response and serializes object to json
 	 * @param response http response
@@ -62,6 +65,17 @@ public class ServletHelper {
 		response.getWriter().println("{ \"errorMessage\": \"" + errorMessage + "\" }");
 	}
 
+	/**
+	 * Sets ok response and content type
+	 * @param response http response
+	 */
+	public static void setOkResponse(HttpServletResponse response) {
+		response.setCharacterEncoding(ENCODING_UTF_8);
+		response.setContentType(CONTENT_TYPE);
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	
 //	public static String parseLinkBaseUrl(HttpServletRequest request) {
 //		String linkBaseUrlEncoded = request.getParameter("linkBaseUrl");
 //		if(linkBaseUrlEncoded == null) {

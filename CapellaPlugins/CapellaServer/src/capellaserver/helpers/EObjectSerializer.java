@@ -14,34 +14,26 @@ import com.google.gson.JsonObject;
 
 public class EObjectSerializer {
 	
-	public static JsonObject serializeObjectWithMetaData(EObject eObject) {
-		Gson gson = new Gson();
-		JsonObject serializedObject = serializeEObjectToJson(eObject);
-		JsonObject metaData = new JsonObject();
-		JsonArray jsonArrayTypes = gson.toJsonTree(getAllObjectTypes(eObject.getClass())).getAsJsonArray();
-		metaData.add("types",jsonArrayTypes);
-		EObject container =  eObject.eContainer();
-		if (container!= null) {
-			EStructuralFeature idFeature = getIdStructuralFeature(container);
-			if (idFeature != null && idFeature.getEType().isInstance("")) {
-				IdentifiableReferenceObject containerProperty = new IdentifiableReferenceObject(
-						(String) container.eGet(idFeature));
-				metaData.add("eContainer", gson.toJsonTree(containerProperty));
-			}
+	public static JsonArray serializeEObjectCollection(List<EObject> eObjects) {
+		JsonArray resultArray = new JsonArray(eObjects.size());
+		for(EObject eObject : eObjects){
+			resultArray.add(serializeEObject(eObject));
 		}
-		JsonObject elementWithMetaData = new JsonObject();
-		elementWithMetaData.add("element", serializedObject);
-		elementWithMetaData.add("types", metaData);
-		return elementWithMetaData;
+		return resultArray;
 	}
 
-	public static JsonObject serializeEObjectToJson(EObject eObject) {
+	public static JsonObject serializeEObject(EObject eObject) {
 		Gson gson = new Gson();
 		JsonObject json = new JsonObject();
+		
+		EObject container =  eObject.eContainer();
+		IdentifiableReferenceObject containerProperty = getIdentifiableReferenceObjectFromEObject(container);
+		if(containerProperty != null) {
+			json.add("eContainer", gson.toJsonTree(containerProperty));
+		}
+		
 		for (EStructuralFeature structuralFeature : eObject.eClass().getEAllStructuralFeatures()) {
-			// TODO should skip the properties that are computed from others (could be
-			// useful)?
-			if (structuralFeature.isDerived()) {
+			if (structuralFeature.isDerived()) { // TODO should skip the properties that are computed from others (could be useful)?
 				continue;
 			}
 			if (structuralFeature.isMany()) {
@@ -52,6 +44,39 @@ public class EObjectSerializer {
 		}
 
 		return json;
+	}
+
+	public static JsonArray serializeObjectTypes(EObject eObject) {
+		Gson gson = new Gson();
+		return gson.toJsonTree(getAllObjectTypes(eObject.getClass())).getAsJsonArray();
+	}
+	
+	private static void serializeProperty(Gson gson, EStructuralFeature structuralFeature, JsonObject json,
+			EObject eObject) {
+		Object property = eObject.eGet(structuralFeature);
+		if (property == null) {
+			return;
+		}
+		if (property instanceof String) {
+			json.addProperty(structuralFeature.getName(), (String) property);
+			return;
+		}
+		if (property instanceof Boolean) {
+			json.addProperty(structuralFeature.getName(), (Boolean) property);
+			return;
+		}
+		if (property instanceof Number) {
+			json.addProperty(structuralFeature.getName(), (Number) property);
+			return;
+		}
+		if (!(property instanceof EObject)) {
+			return;
+		}
+		
+		IdentifiableReferenceObject referenceProperty = getIdentifiableReferenceObjectFromEObject((EObject) property);
+		if (referenceProperty != null) {
+			json.add(structuralFeature.getName(), gson.toJsonTree(referenceProperty));
+		}
 	}
 
 	private static void serializeCollection(Gson gson, EStructuralFeature structuralFeature, JsonObject json,
@@ -100,42 +125,6 @@ public class EObjectSerializer {
 
 	}
 
-	private static void serializeProperty(Gson gson, EStructuralFeature structuralFeature, JsonObject json,
-			EObject eObject) {
-		Object property = eObject.eGet(structuralFeature);
-		if (property == null) {
-			return;
-		}
-		if (property instanceof String) {
-			json.addProperty(structuralFeature.getName(), (String) property);
-			return;
-		}
-		if (property instanceof Boolean) {
-			json.addProperty(structuralFeature.getName(), (Boolean) property);
-			return;
-		}
-		if (property instanceof Number) {
-			json.addProperty(structuralFeature.getName(), (Number) property);
-			return;
-		}
-		if (!(property instanceof EObject)) {
-			return;
-		}
-		EObject eProperty = (EObject) property;
-		EStructuralFeature idFeature = getIdStructuralFeature(eProperty);
-		if (idFeature != null && idFeature.getEType().isInstance("")) {
-			IdentifiableReferenceObject referenceProperty = new IdentifiableReferenceObject(
-					(String) eProperty.eGet(idFeature));
-			json.add(structuralFeature.getName(), gson.toJsonTree(referenceProperty));
-		}
-
-//		if(structuralFeature.getEType().getInstanceClassName() == null) {
-//			
-//		}
-		// if(structuralFeature.isRequired() && ) TODO maybe consider handling required
-		// null attributes
-
-	}
 
 	/**
 	 * helper method to extract the structural feature corresponding to id property
@@ -149,6 +138,26 @@ public class EObjectSerializer {
 				.orElse(null);
 	}
 
+	
+	/**
+	 * helper method to extract the structural feature corresponding to id property
+	 * 
+	 * @param eObject EObject to extract the feature from
+	 * @return structural feature corresponding to id property if exists, null
+	 *         otherwise
+	 */
+	private static IdentifiableReferenceObject getIdentifiableReferenceObjectFromEObject(EObject eObject) {
+		if(eObject == null) {
+			return null;
+		}
+		EStructuralFeature idFeature = getIdStructuralFeature(eObject);
+		
+		if(idFeature == null || !idFeature.getEType().isInstance("")) {
+			return null;
+		}
+		return  new IdentifiableReferenceObject((String) eObject.eGet(idFeature));
+	}
+	
 	/**
 	 * Class used for serialization of the reference objects
 	 */
@@ -165,13 +174,18 @@ public class EObjectSerializer {
 		}
 	}
 
-	public static List<String> getAllObjectTypes(Class elementClass) {
+	/**
+	 * returns list of object types and super-types simple names
+	 * @param clazz Class to get types of
+	 * @return list of strings retrieved as class.getSimpleName() from clazz and its super classes
+	 */
+	private static List<String> getAllObjectTypes(Class clazz) {
 		List<String> classNameList = new ArrayList<String>();
-		while (elementClass != null) {
-			classNameList.add(elementClass.getSimpleName());
-			elementClass = elementClass.getSuperclass();
+		while (clazz != null) {
+			classNameList.add(clazz.getSimpleName());
+			clazz = clazz.getSuperclass();
 		}
 		return classNameList;
 	}
-
+	
 }

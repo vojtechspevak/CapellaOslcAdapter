@@ -9,45 +9,50 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.gson.JsonObject;
+
 import capellaserver.domain.Element;
 import capellaserver.helpers.EObjectSerializer;
 import capellaserver.helpers.ServletHelper;
 import capellaserver.services.ElementService;
 import capellaserver.services.MappingService;
+import capellaserver.services.ResourceService;
 
 public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * This servlet is used to find element by id and return as best suitable sub-type
+     * This servlet is used to find element by id
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     		 throws ServletException, IOException {
     	String projectName = request.getParameter("projectName");
-		String linkBaseUrl = request.getParameter("linkBaseUrl");
     	String elementId = request.getParameter("elementId");
     	boolean includeTypes = Boolean.parseBoolean(request.getParameter("includeTypes"));
     	if (projectName == null || elementId == null) {
 			ServletHelper.setErrorResponse(response, "Project name and elementId needs to be provided");
     		return;
     	}
-    	
-    	ElementService elementService = new ElementService(request);
-    	EObject capellaElement = elementService.getElementById(projectName, elementId);
-    	
-//		MappingService mappingService = new MappingService(linkBaseUrl);
-//    	Element sysmlElement = mappingService.mapFromEObject(capellaElement);
 
+    	ResourceService resourceService = new ResourceService(request);
+    	EObject element = resourceService.getElementById(projectName, elementId);
+    	if(element == null) {
+    		ServletHelper.setErrorResponse(response, "Specified element does not exist");
+    		return;
+    	}
+		
+		if(!includeTypes) {
+			response.getWriter().println(EObjectSerializer.serializeEObject(element).toString());
+		} else {
+			JsonObject elementWithTypes = new JsonObject();
+			elementWithTypes.add("element", EObjectSerializer.serializeEObject(element));
+			elementWithTypes.add("types", EObjectSerializer.serializeObjectTypes(element));
+			response.getWriter().println(elementWithTypes.toString());
+		}
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
-//		if(includeTypes) {
-//			
-//		}
-		response.getWriter().println(EObjectSerializer.serializeObjectWithMetaData(capellaElement).toString());
-    	
-    	//ServletHelper.setOkResponse(response, sysmlElement);
     }
 	
 }

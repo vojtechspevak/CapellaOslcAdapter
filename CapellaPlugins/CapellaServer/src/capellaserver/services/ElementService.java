@@ -25,7 +25,7 @@ public class ElementService extends BaseService {
 	}
 
 	public List<EObject> getElementsByFullTextSearch(String projectName, String searchText) {
-		List<EObject> elements = _capellaElementsProvider.getProjectElementsFullText(projectName, searchText);
+		List<EObject> elements = _capellaElementsProvider.getProjectElementsFullText(projectName, searchText, ELEMENT_CLASS);
 		return handlePaging(elements);
 	}
 
