@@ -28,6 +28,7 @@ public class ResourceServlet extends HttpServlet {
     	String projectName = request.getParameter("projectName");
 		String linkBaseUrl = request.getParameter("linkBaseUrl");
     	String elementId = request.getParameter("elementId");
+    	boolean includeTypes = Boolean.parseBoolean(request.getParameter("includeTypes"));
     	if (projectName == null || elementId == null) {
 			ServletHelper.setErrorResponse(response, "Project name and elementId needs to be provided");
     		return;
@@ -41,7 +42,10 @@ public class ResourceServlet extends HttpServlet {
 
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter().println(EObjectSerializer.serializeEObjectToJson(capellaElement));
+//		if(includeTypes) {
+//			
+//		}
+		response.getWriter().println(EObjectSerializer.serializeObjectWithMetaData(capellaElement).toString());
     	
     	//ServletHelper.setOkResponse(response, sysmlElement);
     }
