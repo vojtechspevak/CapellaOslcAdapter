@@ -11,10 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.jena.atlas.logging.Log;
+import org.capella.oslc.domains.capella.EObjectMock;
+import org.capella.oslc.domains.capella.NamedElement;
+import org.capella.oslc.mapping.IMapping;
+import org.capella.oslc.mapping.Mapper;
 import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 //import org.oasis.oslcop.sysml.SysmlClass;
 import org.oasis.oslcop.sysml.Element;
@@ -50,10 +55,15 @@ public class CapellaClient {
 		return API_URL_BASE + API_URL_RESOURCES_PATH + "?projectName=" + projectName + "&elementId=" + elementId + "&linkBaseUrl=" + linkBaseUrl;
 	}
 	
-	private static String getEncodedLinkBaseUrl(String projectName) {
+	public static String getEncodedLinkBaseUrl(String projectName) {
 		String url = OSLC4JUtils.getPublicURI().toString() + "/services/projects/" + projectName + "/elements/";
         return encodeUrlText(url);
 	}
+
+	public static String getLinkBaseUrl(String projectName) {
+		return OSLC4JUtils.getPublicURI().toString() + "/services/projects/" + projectName + "/elements/";
+	}
+
 	
 	private static String getApiUrlElementsSelectionPath(String projectName, String searchTerm) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
@@ -179,7 +189,7 @@ public class CapellaClient {
 
 	public static Element getElementById(String projectId, String id) {
 		try {
-			URL url = new URL(getApiUrlElementByIdPath(projectId,id));
+			URL url = new URL(getApiUrlElementByIdPath(projectId,id)+"&includeTypes=true");
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 			int status = con.getResponseCode();
@@ -189,22 +199,59 @@ public class CapellaClient {
 		    Gson gson = new Gson();
 			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
 			java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {}.getType();
-			List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
+			List<String> elementTypes = gson.fromJson(jsonObject.get("types"), stringListType);
 			if (elementTypes.contains("ClassImpl")) {
-			    return gson.fromJson(jsonObject, SysmlClass.class);
+				EObjectMock capellaElement = gson.fromJson(jsonObject.get("element"), org.capella.oslc.domains.capella.Class.class);
+				return Mapper
+						.getMappingByClass(org.capella.oslc.domains.capella.Class.class)
+						.map(capellaElement,getLinkBaseUrl(projectId));
 			}
-			if (elementTypes.contains("GeneralizationImpl")) {
-			    return gson.fromJson(jsonObject, Generalization.class);
-			}
-			if (elementTypes.contains("RelationshipImpl")) {
-			    return gson.fromJson(jsonObject, Relationship.class);
-			}
-		    return gson.fromJson(jsonObject, Element.class);
+//			if (elementTypes.contains("GeneralizationImpl")) {
+//			    return gson.fromJson(jsonObject, Generalization.class);
+//			}
+//			if (elementTypes.contains("RelationshipImpl")) {
+//			    return gson.fromJson(jsonObject, Relationship.class);
+//			}
+			EObjectMock capellaElement = gson.fromJson(jsonObject.get("element"), NamedElement.class);
+			return Mapper
+					.getMappingByClass(NamedElement.class)
+					.map(capellaElement,getLinkBaseUrl(projectId));
 		} catch (IOException e) {
 			Log.warn(CapellaClient.class, e.getMessage());
 		}
 		return null;
 	}
+	
+
+	
+//	public static Element getElementById(String projectId, String id) {
+//		try {
+//			URL url = new URL(getApiUrlElementByIdPath(projectId,id));
+//			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//			con.setRequestMethod("GET");
+//			int status = con.getResponseCode();
+//			if(status != 200) {
+//				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
+//			}
+//		    Gson gson = new Gson();
+//			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
+//			java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {}.getType();
+//			List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
+//			if (elementTypes.contains("ClassImpl")) {
+//			    return gson.fromJson(jsonObject, SysmlClass.class);
+//			}
+//			if (elementTypes.contains("GeneralizationImpl")) {
+//			    return gson.fromJson(jsonObject, Generalization.class);
+//			}
+//			if (elementTypes.contains("RelationshipImpl")) {
+//			    return gson.fromJson(jsonObject, Relationship.class);
+//			}
+//		    return gson.fromJson(jsonObject, Element.class);
+//		} catch (IOException e) {
+//			Log.warn(CapellaClient.class, e.getMessage());
+//		}
+//		return null;
+//	}
 
 	public static List<Element> selectProjectElements(String projectId, String terms) {
 		try {
@@ -228,7 +275,7 @@ public class CapellaClient {
 	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit) {
 		List<SysmlClass> classes = new ArrayList<SysmlClass>();
 		try {
-			URL url = new URL(getApiUrlSysmlClassesPath(projectId,page,limit+1));
+			URL url = new URL("http://localhost:3333/resourcecollection?projectName=" +projectId + "&page=" + page + "&limit=" +limit+ "&type=information::Class");
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 			int status = con.getResponseCode();
@@ -236,15 +283,37 @@ public class CapellaClient {
 				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
 			}
 			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {}.getType();
+			java.lang.reflect.Type listType = new TypeToken<ArrayList<org.capella.oslc.domains.capella.Class>>() {}.getType();
 		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
+		    ArrayList<org.capella.oslc.domains.capella.Class> capellaClasses = gson.fromJson(jsonObject.get("elements"),  listType);
+		    IMapping mapping = Mapper.getMappingByClass(org.capella.oslc.domains.capella.Class.class);
+		    return capellaClasses.stream().map(c -> (SysmlClass) mapping.map(c,getLinkBaseUrl(projectId))).collect(Collectors.toList()); 		
 		} catch (IOException e) {
 			Log.warn(CapellaClient.class, e.getMessage());
 		}
 		return classes;
 	}
+	
+//	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit) {
+//		List<SysmlClass> classes = new ArrayList<SysmlClass>();
+//		try {
+//			URL url = new URL(getApiUrlSysmlClassesPath(projectId,page,limit+1));
+//			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//			con.setRequestMethod("GET");
+//			int status = con.getResponseCode();
+//			if(status != 200) {
+//				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
+//			}
+//			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
+//			java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {}.getType();
+//		    Gson gson = new Gson();
+//		    return gson.fromJson(jsonObject.get("elements"),  listType);
+//		    		
+//		} catch (IOException e) {
+//			Log.warn(CapellaClient.class, e.getMessage());
+//		}
+//		return classes;
+//	}
 
 	public static SysmlClass getSysmlClassById(String projectId, String id) {
 		try { //TODO vyextrahovat spolecnou funkcionalitu do jine metody a mozna nejaky check. staci vlastne jen url a typ listu

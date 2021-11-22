@@ -11,6 +11,7 @@ import org.polarsys.capella.common.data.modellingcore.AbstractConstraint;
 import org.polarsys.capella.core.data.capellacore.Generalization;
 import org.polarsys.capella.core.data.capellacore.NamedElement;
 import org.polarsys.capella.core.data.capellacore.Relationship;
+import org.polarsys.capella.core.data.capellacore.impl.NamedElementImpl;
 
 import capellaserver.domain.Link;
 import capellaserver.domain.Resource;
@@ -161,6 +162,7 @@ public class MappingService {
 			e1.printStackTrace();
 		}
 		sysmlElement.setIdentifier(capellaElement.getId());
+
 		sysmlElement.setSysmlIdentifier(capellaElement.getId());
 		sysmlElement.setName(capellaElement.getName());
 		sysmlElement.setDescription(capellaElement.getDescription());
@@ -171,6 +173,7 @@ public class MappingService {
 	}
 	
 	private static URI createURI(String uriString) {
+
 		try {
 			return new URI(uriString);
 		} catch (URISyntaxException e1) {
