@@ -16,7 +16,7 @@ import capellaserver.helpers.EObjectSerializer;
 import capellaserver.helpers.ServletHelper;
 import capellaserver.services.ResourceService;
 
-public class ResourceCollectionServlet extends HttpServlet {
+public class GenericResourceCollectionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 12L;
     private static final String DEFAULT_TYPE = "capellacore::NamedElement";

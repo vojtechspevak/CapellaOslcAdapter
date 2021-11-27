@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CapellaAqlApi
+Bundle-SymbolicName: CapellaEmfApi
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: CapellaAqlApi
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle:  org.eclipse.emf.ecore,
+ org.polarsys.capella.core.model.handler,
+ org.eclipse.sirius,
+ org.eclipse.acceleo.query;bundle-version="6.0.8",
+ com.google.guava;bundle-version="21.0.0",
+ org.eclipse.core.resources
+Export-Package: capellaapi.provider
