@@ -148,7 +148,7 @@ public class MappingService {
 		if(capellaElement.eContainer() instanceof NamedElement) {
 			NamedElement container = (NamedElement) capellaElement.eContainer();
 			try {
-				Link ownerLink =new Link(new URI(_linkBaseUrl + container.getId()), container.getName());
+				Link ownerLink = new Link(new URI(_linkBaseUrl + container.getId()), container.getName());
 				sysmlElement.setOwner(ownerLink);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();

@@ -24,6 +24,7 @@ public class ServerRunnable implements Runnable {
         handler.addServletWithMapping(RelationshipServlet.class, "/relationship");
         handler.addServletWithMapping(GenericResourceCollectionServlet.class, "/api/resourcecollection");
         handler.addServletWithMapping(GenericResourceServlet.class, "/api/resource");
+        handler.addServletWithMapping(SysmlPackageServlet.class, "/sysmlpackage");
         handler.addServletWithMapping(ResourceServlet.class, "/*");
         try {
 			server.start();

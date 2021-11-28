@@ -13,7 +13,7 @@ public class BaseService {
 
 	protected ICapellaEmfElementsProvider _capellaElementsProvider = new CapellaEmfElementsProvider();
 	protected HttpServletRequest _request;
-
+	
 	public BaseService(HttpServletRequest request) {
 		_request = request;
 	}
