@@ -119,7 +119,6 @@ public class MappingService {
 		sysmlGeneralization.setGeneral(new Link(createURI(_linkBaseUrl + capellaGeneralization.getSuper().getId())));
 		sysmlGeneralization.setSpecific(new Link(createURI(_linkBaseUrl + capellaGeneralization.getSub().getId())));
 		sysmlGeneralization.setIdentifier(capellaGeneralization.getId());
-		sysmlGeneralization.setName(capellaGeneralization.getLabel());
 		sysmlGeneralization.setDescription(capellaGeneralization.getDescription());
 		sysmlGeneralization.setTitle(capellaGeneralization.getFullLabel());
 		sysmlGeneralization.setShortTitle(capellaGeneralization.getLabel());

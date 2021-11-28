@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 
 import capellaserver.helpers.EObjectSerializer;
 import capellaserver.helpers.ServletHelper;
-import capellaserver.services.ResourceService;
+import capellaserver.services.GenericResourceService;
 
 public class GenericResourceCollectionServlet extends HttpServlet {
 
@@ -40,7 +40,7 @@ public class GenericResourceCollectionServlet extends HttpServlet {
 			return;
 		}
 
-    	ResourceService resourceService = new ResourceService(request);
+    	GenericResourceService resourceService = new GenericResourceService(request);
 
 		if (fullTextSearch != null) {
 			List<EObject> foundElements = resourceService.getElementsByFullTextSearch(projectName, fullTextSearch, type);

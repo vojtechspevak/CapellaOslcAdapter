@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 
 import capellaserver.helpers.EObjectSerializer;
 import capellaserver.helpers.ServletHelper;
-import capellaserver.services.ResourceService;
+import capellaserver.services.GenericResourceService;
 
 public class GenericResourceServlet extends HttpServlet {
 
@@ -35,7 +35,7 @@ public class GenericResourceServlet extends HttpServlet {
     		return;
     	}
 
-    	ResourceService resourceService = new ResourceService(request);
+    	GenericResourceService resourceService = new GenericResourceService(request);
     	EObject element = resourceService.getElementById(projectName, elementId);
     	if(element == null) {
     		ServletHelper.setErrorResponse(response, "Specified element does not exist");

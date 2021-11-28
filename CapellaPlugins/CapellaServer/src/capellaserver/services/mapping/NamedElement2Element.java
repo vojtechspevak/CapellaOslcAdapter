@@ -18,35 +18,33 @@ public class NamedElement2Element extends AbstractMapping implements IMapping {
 	}
 
 	@Override
-	public Element map(EObject eObject, String linkBaseUrl) {
-		if(!(eObject instanceof NamedElement)) {
-			String errorMessage = "Cannot map argument of type " + eObject.getClass().getName() + " to type Element";
+	public Element map(EObject source, String linkBaseUrl) {
+		if (!(source instanceof NamedElement)) {
+			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Element";
 			throw new IllegalArgumentException(errorMessage);
 		}
-		NamedElement capellaElement = (NamedElement) eObject;
-		Element result = new Element();
-		Set<Link> contentsSet = eObject.eContents()
-				.stream()
-				.filter(e -> (e instanceof CapellaElement)) // ModelElement seems to be the most generic one
+		NamedElement capellaElement = (NamedElement) source;
+		Element target = new Element();
+		Set<Link> contentsSet = source.eContents().stream().filter(e -> (e instanceof CapellaElement)) // ModelElement
+																										// seems to be
+																										// the most
+																										// generic one
 				.map(ne -> new Link(createURI(linkBaseUrl + ((CapellaElement) ne).getId())))
 				.collect(Collectors.toSet());
-			
-			result.setOwnedElement(contentsSet);
-			if(eObject.eContainer() != null && eObject.eContainer() instanceof CapellaElement) {
-				Link ownerLink = new Link(createURI(linkBaseUrl +((CapellaElement) eObject.eContainer()).getId()));
-				result.setOwner(ownerLink);
-			}
-			
-			result.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
-			result.setIdentifier(capellaElement.getId());
-			result.setSysmlIdentifier(capellaElement.getId());
-			result.setName(capellaElement.getName());
-			result.setDescription(capellaElement.getDescription());
-			result.setTitle(capellaElement.getName());
-			result.setShortTitle(capellaElement.getName());
-			return result;
+		target.setOwnedElement(contentsSet);
+
+		target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
+		target.setIdentifier(capellaElement.getId());
+		target.setSysmlIdentifier(capellaElement.getId());
+		target.setName(capellaElement.getName());
+		target.setDescription(capellaElement.getDescription());
+		target.setTitle(capellaElement.getName());
+		target.setShortTitle(capellaElement.getName());
+
+		setOwnerIfPresent(source, target, linkBaseUrl);
+		addAllCapellaTypes(target, capellaElement.getClass());
+
+		return target;
 	}
 
-
-	
 }

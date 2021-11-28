@@ -5,12 +5,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.emf.ecore.EObject;
-import org.polarsys.capella.core.data.capellacore.NamedElement;
 import org.polarsys.capella.core.data.capellacore.Relationship;
 
 public class RelationshipService extends BaseService {
 
-	private static final Class RELATIONSHIP_CLASS = Relationship.class;
+	private static final Class<?> RELATIONSHIP_CLASS = Relationship.class;
 
 	public RelationshipService(HttpServletRequest request) {
 		super(request);

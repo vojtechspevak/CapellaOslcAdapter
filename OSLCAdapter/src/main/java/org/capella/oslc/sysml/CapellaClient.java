@@ -194,6 +194,9 @@ public class CapellaClient {
 			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
 			java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {}.getType();
 			List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
+			if (elementTypes.contains("LogicalComponentPkgImpl")) {
+			    return gson.fromJson(jsonObject, SysmlPackage.class);
+			}
 			if (elementTypes.contains("ClassImpl")) {
 			    return gson.fromJson(jsonObject, SysmlClass.class);
 			}

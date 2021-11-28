@@ -88,6 +88,7 @@ import io.swagger.annotations.ApiOperation;
 import org.oasis.oslcop.sysml.Generalization;
 import org.oasis.oslcop.sysml.Relationship;
 import org.oasis.oslcop.sysml.SysmlClass;
+import org.oasis.oslcop.sysml.SysmlPackage;
 // End of user code
 
 // Start of user code pre_class_code
@@ -188,6 +189,12 @@ public class ElementService
         if (aElement != null) {
             httpServletRequest.setAttribute("aElement", aElement);
             // Start of user code getElementAsHtml_setAttributes
+            if(aElement instanceof SysmlPackage) {
+                httpServletRequest.setAttribute("aSysmlPackage", aElement);
+                RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackage.jsp");
+                rd.forward(httpServletRequest,httpServletResponse);
+                return;
+            }
             if(aElement instanceof SysmlClass) {
                 httpServletRequest.setAttribute("aSysmlClass", aElement);
                 RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlclass.jsp");

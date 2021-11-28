@@ -9,5 +9,5 @@ public interface IMapping {
 	public Class<?> getTargetClass();
 	public String getSourceClassName();
 	public String getTargetClassName();
-	public Element map(EObject eObject, String linkBaseUrl);
+	public Element map(EObject source, String linkBaseUrl);
 }

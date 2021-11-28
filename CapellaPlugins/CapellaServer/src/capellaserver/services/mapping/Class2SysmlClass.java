@@ -16,43 +16,40 @@ public class Class2SysmlClass extends AbstractMapping implements IMapping {
 	}
 
 	@Override
-	public Element map(EObject eObject, String linkBaseUrl) {
-		if(!(eObject instanceof org.polarsys.capella.core.data.information.Class)) {
-			String errorMessage = "Cannot map argument of type " + eObject.getClass().getName() + " to type SysmlClass";
+	public Element map(EObject source, String linkBaseUrl) {
+		if(!(source instanceof org.polarsys.capella.core.data.information.Class)) {
+			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type SysmlClass";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		org.polarsys.capella.core.data.information.Class capellaElement = 
-				(org.polarsys.capella.core.data.information.Class) eObject;
-		SysmlClass result = new SysmlClass();
+				(org.polarsys.capella.core.data.information.Class) source;
+		SysmlClass target = new SysmlClass();
 		for(CapellaElement gen : capellaElement.getOwnedGeneralizations()) {
-			result.addOwnedGeneralization(new Link(createURI(linkBaseUrl + gen.getId())));
+			target.addOwnedGeneralization(new Link(createURI(linkBaseUrl + gen.getId())));
 		}
 		for(CapellaElement feature : capellaElement.getFeatures()) {
-			result.addFeature(new Link(createURI(linkBaseUrl + feature.getId())));
+			target.addFeature(new Link(createURI(linkBaseUrl + feature.getId())));
 		}
 		for(CapellaElement ownedFeature : capellaElement.getOwnedFeatures()) {
-			result.addOwnedFeature(new Link(createURI(linkBaseUrl + ownedFeature.getId())));
+			target.addOwnedFeature(new Link(createURI(linkBaseUrl + ownedFeature.getId())));
 		}
 		for(CapellaElement ownedPropVal : capellaElement.getOwnedPropertyValues()) {
-			result.addOwnedMember(new Link(createURI(linkBaseUrl + ownedPropVal.getId())));
+			target.addOwnedMember(new Link(createURI(linkBaseUrl + ownedPropVal.getId())));
 		}
 		for(AbstractConstraint constraint : capellaElement.getOwnedConstraints()) {
-			result.addOwnedFeature(new Link(createURI(linkBaseUrl + constraint.getId())));
+			target.addOwnedFeature(new Link(createURI(linkBaseUrl + constraint.getId())));
 		}
-		
-		if(eObject.eContainer() != null && eObject.eContainer() instanceof CapellaElement) {
-			Link ownerLink = new Link(createURI(linkBaseUrl +((CapellaElement) eObject.eContainer()).getId()));
-			result.setOwner(ownerLink);
-		}
-		
-		result.setIdentifier(capellaElement.getId());
-		result.setSysmlIdentifier(capellaElement.getId());
-		result.setName(capellaElement.getName());
-		result.setDescription(capellaElement.getDescription());
-		result.setTitle(capellaElement.getName());
-		result.setShortTitle(capellaElement.getName());
-		result.setIsAbstract(capellaElement.isAbstract());
-		result.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
-		return result;
+
+		target.setIdentifier(capellaElement.getId());
+		target.setSysmlIdentifier(capellaElement.getId());
+		target.setName(capellaElement.getName());
+		target.setDescription(capellaElement.getDescription());
+		target.setTitle(capellaElement.getName());
+		target.setShortTitle(capellaElement.getName());
+		target.setIsAbstract(capellaElement.isAbstract());
+		target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
+		setOwnerIfPresent(source, target, linkBaseUrl);
+		addAllCapellaTypes(target,capellaElement.getClass());
+		return target;
 	}
 }

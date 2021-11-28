@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EObject;
 
 import capellaserver.domain.Element;
@@ -19,32 +21,18 @@ public class Mapper {
 	{
 		_mappings = new ArrayList<IMapping>();
 		_mappings.add(new ComponentPkg2SysmlPackage());
-//		_mappings.add(new NamedElement2Element());
-//		_mappings.add(new Class2SysmlClass());
+		_mappings.add(new NamedElement2Element());
+		_mappings.add(new Class2SysmlClass());
+		_mappings.add(new Generalization2Generalization());
+		_mappings.add(new Relationship2Relationship());
 	}
 
-	// TODO change this, get by target type or better provide just a map method
-	public static IMapping getMappingByClass(Class<?> sourceClass){
-		return _mappings
-				.stream()
-				.filter(m -> m.getSourceClass().equals(sourceClass))
-				.findFirst()
-				.orElse(null);
-	}
-
-	public static List<IMapping> getMappings(){
-		return _mappings;
-	}
-
-	
 	public static Element map(EObject source, String linkBaseUrl){
-		IMapping mapping = _mappings
-				.stream()
-				.filter(m -> m.getSourceClass().isAssignableFrom(source.getClass()))
-				.findFirst()
-				.orElse(null);
-		
-		if (mapping != null) {
+		if(source == null) {
+			return null;
+		}
+		IMapping mapping = findMostSuitableMapping(source);
+		if (mapping == null) {
 			throw new UnsupportedOperationException("Mapping not found.");
 		}
 		
@@ -65,14 +53,28 @@ public class Mapper {
 			throw new UnsupportedOperationException("Mapping not found.");
 		}
 		
-		return source.stream().map(s -> mapping.map(s, linkBaseUrl)).collect(Collectors.toList());
-		
+		return source.stream()
+				.map(s -> mapping.map(s, linkBaseUrl))
+				.collect(Collectors.toList());
 	}
 	
+	/**
+	 * searches for the best suited mapping for the source
+	 * i.e. the mapping going from the exact Class or the closest super Class
+	 * @param source source object to find the mapping for
+	 * @return best suitable mapping or null, if none was found
+	 */
+	private static IMapping findMostSuitableMapping(EObject source) {
+		Class<?> sourceClass = source.getClass();
+		while (sourceClass != null) {
+			for(IMapping mapping : _mappings) {
+				if(mapping.getSourceClass().isAssignableFrom(sourceClass)) {
+					return mapping;
+				}
+			}
+			sourceClass = sourceClass.getSuperclass();
+		}
+		return null;
+	}
 	
-	//TODO check if class is collection and infer the type
-//    public static boolean isClassCollection(Class<?> c) {
-//        return Collection.class.isAssignableFrom(c)
-//                || Map.class.isAssignableFrom(c);
-//    }
 }
