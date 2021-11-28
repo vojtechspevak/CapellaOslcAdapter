@@ -23,10 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
-import org.eclipse.lyo.oslc.domains.Person;
-import org.eclipse.lyo.oslc.domains.am.Oslc_amDomainConstants;
-import org.eclipse.lyo.oslc.domains.am.Resource;
 import org.eclipse.lyo.oslc4j.core.exception.OslcCoreApplicationException;
 import org.eclipse.lyo.oslc4j.core.model.AllowedValues;
 import org.eclipse.lyo.oslc4j.core.model.Compact;
@@ -52,6 +48,7 @@ import org.eclipse.lyo.oslc4j.provider.json4j.Json4JProvidersRegistry;
 import org.capella.oslc.sysml.services.ServiceProviderCatalogService;
 import org.capella.oslc.sysml.services.ServiceProviderService;
 import org.capella.oslc.sysml.services.ResourceShapeService;
+
 import org.oasis.oslcop.sysml.AcceptActionUsage;
 import org.oasis.oslcop.sysml.ActionDefinition;
 import org.oasis.oslcop.sysml.ActionUsage;
@@ -71,6 +68,7 @@ import org.oasis.oslcop.sysml.CalculationDefinition;
 import org.oasis.oslcop.sysml.CalculationUsage;
 import org.oasis.oslcop.sysml.CaseDefinition;
 import org.oasis.oslcop.sysml.CaseUsage;
+import org.oasis.oslcop.sysml.SysmlClass;
 import org.oasis.oslcop.sysml.Classifier;
 import org.oasis.oslcop.sysml.Comment;
 import org.oasis.oslcop.sysml.ConjugatedPortDefinition;
@@ -92,6 +90,7 @@ import org.oasis.oslcop.sysml.FeatureMembership;
 import org.oasis.oslcop.sysml.FeatureTyping;
 import org.oasis.oslcop.sysml.Function;
 import org.oasis.oslcop.sysml.Generalization;
+import org.oasis.oslcop.sysml.SysmlImport;
 import org.oasis.oslcop.sysml.IndividualDefinition;
 import org.oasis.oslcop.sysml.IndividualUsage;
 import org.oasis.oslcop.sysml.InterfaceDefinition;
@@ -101,8 +100,10 @@ import org.oasis.oslcop.sysml.ItemUsage;
 import org.oasis.oslcop.sysml.Membership;
 import org.oasis.oslcop.sysml.Multiplicity;
 import org.oasis.oslcop.sysml.Namespace;
+import org.oasis.oslcop.sysml.SysmlPackage;
 import org.oasis.oslcop.sysml.PartDefinition;
 import org.oasis.oslcop.sysml.PartUsage;
+import org.eclipse.lyo.oslc.domains.Person;
 import org.oasis.oslcop.sysml.PortConjugation;
 import org.oasis.oslcop.sysml.PortDefinition;
 import org.oasis.oslcop.sysml.PortUsage;
@@ -114,15 +115,13 @@ import org.oasis.oslcop.sysml.RenderingDefinition;
 import org.oasis.oslcop.sysml.RenderingUsage;
 import org.oasis.oslcop.sysml.RequirementDefinition;
 import org.oasis.oslcop.sysml.RequirementUsage;
+import org.eclipse.lyo.oslc.domains.am.Resource;
 import org.oasis.oslcop.sysml.StateUsage;
 import org.oasis.oslcop.sysml.Step;
 import org.oasis.oslcop.sysml.Structure;
 import org.oasis.oslcop.sysml.Subsetting;
 import org.oasis.oslcop.sysml.Succession;
 import org.oasis.oslcop.sysml.Superclassing;
-import org.oasis.oslcop.sysml.SysmlClass;
-import org.oasis.oslcop.sysml.SysmlDomainConstants;
-import org.oasis.oslcop.sysml.SysmlImport;
 import org.oasis.oslcop.sysml.TextualRepresentation;
 import org.oasis.oslcop.sysml.TransitionUsage;
 import org.oasis.oslcop.sysml.Type;
@@ -135,6 +134,12 @@ import org.oasis.oslcop.sysml.ViewDefinition;
 import org.oasis.oslcop.sysml.ViewUsage;
 import org.oasis.oslcop.sysml.ViewpointDefinition;
 import org.oasis.oslcop.sysml.ViewpointUsage;
+import org.eclipse.lyo.oslc.domains.am.Oslc_amDomainConstants;
+import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
+import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import org.eclipse.lyo.oslc.domains.jazz_am.Jazz_amDomainConstants;
+import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
+import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.services.ServiceProviderService1;
 import org.capella.oslc.sysml.services.ServiceProviderService2;
 import org.capella.oslc.sysml.services.ServiceProviderService3;
@@ -146,6 +151,7 @@ import org.capella.oslc.sysml.services.ServiceProviderService8;
 import org.capella.oslc.sysml.services.ServiceProviderService9;
 import org.capella.oslc.sysml.services.ServiceProviderService10;
 import org.capella.oslc.sysml.services.ServiceProviderService11;
+import org.capella.oslc.sysml.services.ServiceProviderService12;
 import org.capella.oslc.sysml.services.SubsettingService;
 import org.capella.oslc.sysml.services.ElementService;
 import org.capella.oslc.sysml.services.ClassService;
@@ -157,6 +163,7 @@ import org.capella.oslc.sysml.services.FeatureTypingService;
 import org.capella.oslc.sysml.services.PortUsageService;
 import org.capella.oslc.sysml.services.AttributeUsageService;
 import org.capella.oslc.sysml.services.PartUsageService;
+import org.capella.oslc.sysml.services.PackageService;
 
 // Start of user code imports
 // End of user code
@@ -193,6 +200,7 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_CLASSES.add(ServiceProviderService9.class);
         RESOURCE_CLASSES.add(ServiceProviderService10.class);
         RESOURCE_CLASSES.add(ServiceProviderService11.class);
+        RESOURCE_CLASSES.add(ServiceProviderService12.class);
         RESOURCE_CLASSES.add(SubsettingService.class);
         RESOURCE_CLASSES.add(ElementService.class);
         RESOURCE_CLASSES.add(ClassService.class);
@@ -204,6 +212,7 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_CLASSES.add(PortUsageService.class);
         RESOURCE_CLASSES.add(AttributeUsageService.class);
         RESOURCE_CLASSES.add(PartUsageService.class);
+        RESOURCE_CLASSES.add(PackageService.class);
 
         // Catalog resources
         RESOURCE_CLASSES.add(ServiceProviderCatalogService.class);
@@ -285,6 +294,7 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.MEMBERSHIP_PATH, Membership.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.MULTIPLICITY_PATH, Multiplicity.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.NAMESPACE_PATH, Namespace.class);
+        RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.PACKAGE_PATH, SysmlPackage.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.PARTDEFINITION_PATH, PartDefinition.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.PARTUSAGE_PATH, PartUsage.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(FoafDomainConstants.PERSON_PATH, Person.class);
@@ -318,7 +328,6 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.VIEWUSAGE_PATH, ViewUsage.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.VIEWPOINTDEFINITION_PATH, ViewpointDefinition.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(SysmlDomainConstants.VIEWPOINTUSAGE_PATH, ViewpointUsage.class);
-        
     }
 
     public Application()

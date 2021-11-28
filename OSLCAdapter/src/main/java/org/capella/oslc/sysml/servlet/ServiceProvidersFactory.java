@@ -35,6 +35,11 @@ import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 
 import org.capella.oslc.sysml.ServiceProviderInfo;
 
+import org.eclipse.lyo.oslc.domains.am.Oslc_amDomainConstants;
+import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
+import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import org.eclipse.lyo.oslc.domains.jazz_am.Jazz_amDomainConstants;
+import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.services.ServiceProviderService1;
 import org.capella.oslc.sysml.services.ServiceProviderService2;
@@ -47,23 +52,18 @@ import org.capella.oslc.sysml.services.ServiceProviderService8;
 import org.capella.oslc.sysml.services.ServiceProviderService9;
 import org.capella.oslc.sysml.services.ServiceProviderService10;
 import org.capella.oslc.sysml.services.ServiceProviderService11;
+import org.capella.oslc.sysml.services.ServiceProviderService12;
 
 // Start of user code imports
 // End of user code
 
 public class ServiceProvidersFactory
 {
-//    private static Class<?>[] RESOURCE_CLASSES =
-//    {
-//        ServiceProviderService1.class, ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService6.class, ServiceProviderService7.class, ServiceProviderService8.class, ServiceProviderService9.class, ServiceProviderService10.class, ServiceProviderService11.class
-//    };
-
     private static Class<?>[] RESOURCE_CLASSES =
     {
-        ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class
+        ServiceProviderService1.class, ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService6.class, ServiceProviderService7.class, ServiceProviderService8.class, ServiceProviderService9.class, ServiceProviderService10.class, ServiceProviderService11.class, ServiceProviderService12.class
     };
 
-    
     private ServiceProvidersFactory()
     {
         super();
@@ -126,6 +126,16 @@ public class ServiceProvidersFactory
             new PrefixDefinition(OslcConstants.OSLC_DATA_NAMESPACE_PREFIX, new URI(OslcConstants.OSLC_DATA_NAMESPACE)),
             new PrefixDefinition(OslcConstants.RDF_NAMESPACE_PREFIX, new URI(OslcConstants.RDF_NAMESPACE)),
             new PrefixDefinition(OslcConstants.RDFS_NAMESPACE_PREFIX, new URI(OslcConstants.RDFS_NAMESPACE)),
+            new PrefixDefinition(Oslc_amDomainConstants.ARCHITECTURE_MANAGEMENT_NAMSPACE_PREFIX, new URI(Oslc_amDomainConstants.ARCHITECTURE_MANAGEMENT_NAMSPACE))
+,
+            new PrefixDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE_PREFIX, new URI(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE))
+,
+            new PrefixDefinition(FoafDomainConstants.FOAF_NAMSPACE_PREFIX, new URI(FoafDomainConstants.FOAF_NAMSPACE))
+,
+            new PrefixDefinition(Jazz_amDomainConstants.JAZZ_ARCHITECTURE_MANAGEMENT_NAMSPACE_PREFIX, new URI(Jazz_amDomainConstants.JAZZ_ARCHITECTURE_MANAGEMENT_NAMSPACE))
+,
+            new PrefixDefinition(OslcDomainConstants.OSLC_NAMSPACE_PREFIX, new URI(OslcDomainConstants.OSLC_NAMSPACE))
+,
             new PrefixDefinition(SysmlDomainConstants.SYSML_NAMSPACE_PREFIX, new URI(SysmlDomainConstants.SYSML_NAMSPACE))
         };
         serviceProvider.setPrefixDefinitions(prefixDefinitions);

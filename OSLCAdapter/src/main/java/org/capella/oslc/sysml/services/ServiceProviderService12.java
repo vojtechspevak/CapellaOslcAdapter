@@ -80,23 +80,31 @@ import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
 import org.oasis.oslcop.sysml.AnnotatingElement;
 import org.oasis.oslcop.sysml.Annotation;
+import org.oasis.oslcop.sysml.Behavior;
+import org.oasis.oslcop.sysml.SysmlClass;
+import org.oasis.oslcop.sysml.Classifier;
 import org.oasis.oslcop.sysml.Comment;
 import org.oasis.oslcop.sysml.Conjugation;
 import org.oasis.oslcop.sysml.Documentation;
 import org.oasis.oslcop.sysml.Element;
+import org.oasis.oslcop.sysml.Expression;
 import org.oasis.oslcop.sysml.Feature;
 import org.oasis.oslcop.sysml.FeatureMembership;
 import org.oasis.oslcop.sysml.FeatureTyping;
+import org.oasis.oslcop.sysml.Function;
 import org.oasis.oslcop.sysml.Generalization;
 import org.oasis.oslcop.sysml.SysmlImport;
 import org.oasis.oslcop.sysml.Membership;
 import org.oasis.oslcop.sysml.Multiplicity;
 import org.oasis.oslcop.sysml.Namespace;
+import org.oasis.oslcop.sysml.SysmlPackage;
 import org.eclipse.lyo.oslc.domains.Person;
 import org.oasis.oslcop.sysml.Redefinition;
 import org.oasis.oslcop.sysml.Relationship;
 import org.eclipse.lyo.oslc.domains.am.Resource;
+import org.oasis.oslcop.sysml.Step;
 import org.oasis.oslcop.sysml.Subsetting;
+import org.oasis.oslcop.sysml.Superclassing;
 import org.oasis.oslcop.sysml.TextualRepresentation;
 import org.oasis.oslcop.sysml.Type;
 import org.oasis.oslcop.sysml.TypeFeaturing;
@@ -109,15 +117,15 @@ import io.swagger.annotations.ApiOperation;
 // Start of user code pre_class_code
 // End of user code
 @OslcService(SysmlDomainConstants.SYSML_DOMAIN)
-@Path("projects/{projectId}/service1/subsettings")
-@Api(value = "OSLC Service for {" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "}")
-public class ServiceProviderService1
+@Path("projects/{projectId}/service12/sysmlPackages")
+@Api(value = "OSLC Service for {" + SysmlDomainConstants.PACKAGE_LOCALNAME + "}")
+public class ServiceProviderService12
 {
     @Context private HttpServletRequest httpServletRequest;
     @Context private HttpServletResponse httpServletResponse;
     @Context private UriInfo uriInfo;
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceProviderService1.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceProviderService12.class);
 
     // Start of user code class_attributes
     // End of user code
@@ -125,7 +133,7 @@ public class ServiceProviderService1
     // Start of user code class_methods
     // End of user code
 
-    public ServiceProviderService1()
+    public ServiceProviderService12()
     {
         super();
     }
@@ -143,20 +151,20 @@ public class ServiceProviderService1
     (
         title = "QueryCapability1",
         label = "QueryCapability1",
-        resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.SUBSETTING_PATH,
-        resourceTypes = {SysmlDomainConstants.SUBSETTING_TYPE},
+        resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH,
+        resourceTypes = {SysmlDomainConstants.PACKAGE_TYPE},
         usages = {}
     )
     @GET
     @Path("query")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
-        value = "Query capability for resources of type {" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "}",
-        notes = "Query capability for resources of type {" + "<a href=\"" + SysmlDomainConstants.SUBSETTING_TYPE + "\">" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "</a>" + "}" +
-            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.SUBSETTING_PATH + "\">" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "</a>" + "}",
+        value = "Query capability for resources of type {" + SysmlDomainConstants.PACKAGE_LOCALNAME + "}",
+        notes = "Query capability for resources of type {" + "<a href=\"" + SysmlDomainConstants.PACKAGE_TYPE + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "}" +
+            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "}",
         produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML
     )
-    public Subsetting[] querySubsettings(
+    public SysmlPackage[] querySysmlPackages(
                                                     @PathParam("projectId") final String projectId ,
                                                      @QueryParam("oslc.where") final String where,
                                                      @QueryParam("oslc.prefix") final String prefix,
@@ -172,11 +180,11 @@ public class ServiceProviderService1
             pageSize = Integer.parseInt(pageSizeString);
         }
 
-        // Start of user code querySubsettings
+        // Start of user code querySysmlPackages
         // Here additional logic can be implemented that complements main action taken in SysmlServerManager
         // End of user code
 
-        final List<Subsetting> resources = SysmlServerManager.querySubsettings(httpServletRequest, projectId, where, prefix, page, pageSize);
+        final List<SysmlPackage> resources = SysmlServerManager.querySysmlPackages(httpServletRequest, projectId, where, prefix, page, pageSize);
         httpServletRequest.setAttribute("queryUri",
                 uriInfo.getAbsolutePath().toString() + "?oslc.paging=true");
         if (resources.size() > pageSize) {
@@ -184,19 +192,19 @@ public class ServiceProviderService1
             httpServletRequest.setAttribute(OSLC4JConstants.OSLC4J_NEXT_PAGE,
                     uriInfo.getAbsolutePath().toString() + "?oslc.paging=true&oslc.pageSize=" + pageSize + "&page=" + (page + 1));
         }
-        return resources.toArray(new Subsetting [resources.size()]);
+        return resources.toArray(new SysmlPackage [resources.size()]);
     }
 
     @GET
     @Path("query")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
-        value = "Query capability for resources of type {" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "}",
-        notes = "Query capability for resources of type {" + "<a href=\"" + SysmlDomainConstants.SUBSETTING_TYPE + "\">" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "</a>" + "}" +
-            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.SUBSETTING_PATH + "\">" + SysmlDomainConstants.SUBSETTING_LOCALNAME + "</a>" + "}",
+        value = "Query capability for resources of type {" + SysmlDomainConstants.PACKAGE_LOCALNAME + "}",
+        notes = "Query capability for resources of type {" + "<a href=\"" + SysmlDomainConstants.PACKAGE_TYPE + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "}" +
+            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "}",
         produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML
     )
-    public void querySubsettingsAsHtml(
+    public void querySysmlPackagesAsHtml(
                                     @PathParam("projectId") final String projectId ,
                                        @QueryParam("oslc.where") final String where,
                                        @QueryParam("oslc.prefix") final String prefix,
@@ -212,14 +220,14 @@ public class ServiceProviderService1
             pageSize = Integer.parseInt(pageSizeString);
         }
 
-        // Start of user code querySubsettingsAsHtml
+        // Start of user code querySysmlPackagesAsHtml
         // End of user code
 
-        final List<Subsetting> resources = SysmlServerManager.querySubsettings(httpServletRequest, projectId, where, prefix, page, pageSize);
+        final List<SysmlPackage> resources = SysmlServerManager.querySysmlPackages(httpServletRequest, projectId, where, prefix, page, pageSize);
 
         if (resources!= null) {
             httpServletRequest.setAttribute("resources", resources);
-            // Start of user code querySubsettingsAsHtml_setAttributes
+            // Start of user code querySysmlPackagesAsHtml_setAttributes
             // End of user code
 
             httpServletRequest.setAttribute("queryUri",
@@ -229,7 +237,7 @@ public class ServiceProviderService1
                 httpServletRequest.setAttribute(OSLC4JConstants.OSLC4J_NEXT_PAGE,
                         uriInfo.getAbsolutePath().toString() + "?oslc.paging=true&oslc.pageSize=" + pageSize + "&page=" + (page + 1));
             }
-            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/subsettingscollection.jsp");
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackagescollection.jsp");
             rd.forward(httpServletRequest,httpServletResponse);
             return;
         }
@@ -241,33 +249,33 @@ public class ServiceProviderService1
     (
          title = "SelectionDialog1",
          label = "SelectionDialog1",
-         uri = "projects/{projectId}/service1/subsettings/selector",
+         uri = "projects/{projectId}/service12/sysmlPackages/selector",
          hintWidth = "250px",
          hintHeight = "250px",
-         resourceTypes = {SysmlDomainConstants.SUBSETTING_TYPE},
+         resourceTypes = {SysmlDomainConstants.PACKAGE_TYPE},
          usages = {}
     )
     @GET
     @Path("selector")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
-    public void SubsettingSelector(
+    public void SysmlPackageSelector(
         @QueryParam("terms") final String terms
         , @PathParam("projectId") final String projectId
         ) throws ServletException, IOException
     {
-        // Start of user code SubsettingSelector_init
+        // Start of user code SysmlPackageSelector_init
         // End of user code
 
         httpServletRequest.setAttribute("selectionUri",UriBuilder.fromUri(OSLC4JUtils.getServletURI()).path(uriInfo.getPath()).build().toString());
-        // Start of user code SubsettingSelector_setAttributes
+        // Start of user code SysmlPackageSelector_setAttributes
         // End of user code
 
         if (terms != null ) {
             httpServletRequest.setAttribute("terms", terms);
-            final List<Subsetting> resources = SysmlServerManager.SubsettingSelector(httpServletRequest, projectId, terms);
+            final List<SysmlPackage> resources = SysmlServerManager.SysmlPackageSelector(httpServletRequest, projectId, terms);
             if (resources!= null) {
                         httpServletRequest.setAttribute("resources", resources);
-                        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/subsettingselectorresults.jsp");
+                        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackageselectorresults.jsp");
                         rd.forward(httpServletRequest, httpServletResponse);
                         return;
             }
@@ -275,7 +283,7 @@ public class ServiceProviderService1
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 
         } else {
-            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/subsettingselector.jsp");
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackageselector.jsp");
             rd.forward(httpServletRequest, httpServletResponse);
             return;
         }

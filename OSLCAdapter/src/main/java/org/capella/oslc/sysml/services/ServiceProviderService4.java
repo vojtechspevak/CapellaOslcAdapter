@@ -75,10 +75,21 @@ import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import org.capella.oslc.sysml.SysmlServerManager;
 import org.capella.oslc.sysml.SysmlServerConstants;
-import org.oasis.oslcop.sysml.Relationship;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
+import org.oasis.oslcop.sysml.AnnotatingElement;
+import org.oasis.oslcop.sysml.Annotation;
+import org.oasis.oslcop.sysml.Comment;
+import org.oasis.oslcop.sysml.Documentation;
+import org.oasis.oslcop.sysml.Element;
+import org.oasis.oslcop.sysml.SysmlImport;
+import org.oasis.oslcop.sysml.Membership;
+import org.oasis.oslcop.sysml.Namespace;
+import org.eclipse.lyo.oslc.domains.Person;
+import org.oasis.oslcop.sysml.Relationship;
+import org.eclipse.lyo.oslc.domains.am.Resource;
+import org.oasis.oslcop.sysml.TextualRepresentation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -216,48 +227,48 @@ public class ServiceProviderService4
         throw new WebApplicationException(Status.NOT_FOUND);
     }
 
-//    @OslcDialog
-//    (
-//         title = "SelectionDialog1",
-//         label = "SelectionDialog1",
-//         uri = "projects/{projectId}/service4/relationships/selector",
-//         hintWidth = "250px",
-//         hintHeight = "250px",
-//         resourceTypes = {SysmlDomainConstants.RELATIONSHIP_TYPE},
-//         usages = {}
-//    )
-//    @GET
-//    @Path("selector")
-//    @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
-//    public void RelationshipSelector(
-//        @QueryParam("terms") final String terms
-//        , @PathParam("projectId") final String projectId
-//        ) throws ServletException, IOException
-//    {
-//        // Start of user code RelationshipSelector_init
+    @OslcDialog
+    (
+         title = "SelectionDialog1",
+         label = "SelectionDialog1",
+         uri = "projects/{projectId}/service4/relationships/selector",
+         hintWidth = "250px",
+         hintHeight = "250px",
+         resourceTypes = {SysmlDomainConstants.RELATIONSHIP_TYPE},
+         usages = {}
+    )
+    @GET
+    @Path("selector")
+    @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
+    public void RelationshipSelector(
+        @QueryParam("terms") final String terms
+        , @PathParam("projectId") final String projectId
+        ) throws ServletException, IOException
+    {
+        // Start of user code RelationshipSelector_init
 //        // End of user code
-//
-//        httpServletRequest.setAttribute("selectionUri",UriBuilder.fromUri(OSLC4JUtils.getServletURI()).path(uriInfo.getPath()).build().toString());
-//        // Start of user code RelationshipSelector_setAttributes
+
+        httpServletRequest.setAttribute("selectionUri",UriBuilder.fromUri(OSLC4JUtils.getServletURI()).path(uriInfo.getPath()).build().toString());
+        // Start of user code RelationshipSelector_setAttributes
 //        // End of user code
-//
-//        if (terms != null ) {
-//            httpServletRequest.setAttribute("terms", terms);
-//            final List<Relationship> resources = SysmlServerManager.RelationshipSelector(httpServletRequest, projectId, terms);
-//            if (resources!= null) {
-//                        httpServletRequest.setAttribute("resources", resources);
-//                        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/relationshipselectorresults.jsp");
-//                        rd.forward(httpServletRequest, httpServletResponse);
-//                        return;
-//            }
-//            log.error("A empty search should return an empty list and not NULL!");
-//            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-//
-//        } else {
-//            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/relationshipselector.jsp");
-//            rd.forward(httpServletRequest, httpServletResponse);
-//            return;
-//        }
-//    }
+
+        if (terms != null ) {
+            httpServletRequest.setAttribute("terms", terms);
+            final List<Relationship> resources = SysmlServerManager.RelationshipSelector(httpServletRequest, projectId, terms);
+            if (resources!= null) {
+                        httpServletRequest.setAttribute("resources", resources);
+                        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/relationshipselectorresults.jsp");
+                        rd.forward(httpServletRequest, httpServletResponse);
+                        return;
+            }
+            log.error("A empty search should return an empty list and not NULL!");
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+
+        } else {
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/relationshipselector.jsp");
+            rd.forward(httpServletRequest, httpServletResponse);
+            return;
+        }
+    }
 
 }

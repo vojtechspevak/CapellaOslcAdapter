@@ -154,20 +154,18 @@
             <dd class="col-sm-9">
             <ul>
             <%
-            for(Link next : aRelationship.getSource()) {
-                if (next.getValue() == null) {
+                if (aRelationship.getSource() == null) {
                     out.write("<li>" + "<em>null</em>" + "</li>");
                 }
                 else {
                     %>
                     <li>
                     <jsp:include page="/org/capella/oslc/sysml/elementtohtml.jsp">
-                        <jsp:param name="resourceUri" value="<%=next.getValue()%>"/> 
+                        <jsp:param name="resourceUri" value="<%=aRelationship.getSource()%>"/> 
                         </jsp:include>
                     </li>
                     <%
                 }
-            }
             %>
             </ul>
             

@@ -75,10 +75,21 @@ import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import org.capella.oslc.sysml.SysmlServerManager;
 import org.capella.oslc.sysml.SysmlServerConstants;
-import org.oasis.oslcop.sysml.Element;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
+import org.oasis.oslcop.sysml.AnnotatingElement;
+import org.oasis.oslcop.sysml.Annotation;
+import org.oasis.oslcop.sysml.Comment;
+import org.oasis.oslcop.sysml.Documentation;
+import org.oasis.oslcop.sysml.Element;
+import org.oasis.oslcop.sysml.SysmlImport;
+import org.oasis.oslcop.sysml.Membership;
+import org.oasis.oslcop.sysml.Namespace;
+import org.eclipse.lyo.oslc.domains.Person;
+import org.oasis.oslcop.sysml.Relationship;
+import org.eclipse.lyo.oslc.domains.am.Resource;
+import org.oasis.oslcop.sysml.TextualRepresentation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 

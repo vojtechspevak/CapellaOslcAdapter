@@ -211,19 +211,17 @@
             <dd class="col-sm-9">
             <ul>
             <%
-            for(Link next : aGeneralization.getSource()) {
-                if (next.getValue() == null) {
-                    out.write("<li>" + "<em>null</em>" + "</li>");
-                }
-                else {
-                    %>
-                    <li>
-                    <jsp:include page="/org/capella/oslc/sysml/elementtohtml.jsp">
-                        <jsp:param name="resourceUri" value="<%=next.getValue()%>"/> 
-                        </jsp:include>
-                    </li>
-                    <%
-                }
+            if (aGeneralization.getSource() == null) {
+                out.write("<li>" + "<em>null</em>" + "</li>");
+            }
+            else {
+                %>
+                <li>
+                <jsp:include page="/org/capella/oslc/sysml/elementtohtml.jsp">
+                    <jsp:param name="resourceUri" value="<%=aGeneralization.getSource()%>"/> 
+                    </jsp:include>
+                </li>
+                <%
             }
             %>
             </ul>

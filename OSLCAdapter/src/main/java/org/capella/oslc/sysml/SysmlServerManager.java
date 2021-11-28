@@ -18,20 +18,99 @@ package org.capella.oslc.sysml;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
-import org.oasis.oslcop.sysml.*;
-import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
 import org.capella.oslc.sysml.ServiceProviderInfo;
+import org.oasis.oslcop.sysml.AcceptActionUsage;
+import org.oasis.oslcop.sysml.ActionDefinition;
+import org.oasis.oslcop.sysml.ActionUsage;
+import org.oasis.oslcop.sysml.AllocationDefinition;
+import org.oasis.oslcop.sysml.AllocationUsage;
+import org.oasis.oslcop.sysml.AnalysisCaseDefinition;
+import org.oasis.oslcop.sysml.AnalysisCaseUsage;
+import org.oasis.oslcop.sysml.AnnotatingElement;
+import org.oasis.oslcop.sysml.Annotation;
+import org.oasis.oslcop.sysml.Association;
+import org.oasis.oslcop.sysml.AssociationStructure;
+import org.oasis.oslcop.sysml.AttributeDefinition;
+import org.oasis.oslcop.sysml.AttributeUsage;
+import org.oasis.oslcop.sysml.Behavior;
+import org.oasis.oslcop.sysml.BooleanExpression;
+import org.oasis.oslcop.sysml.CalculationDefinition;
+import org.oasis.oslcop.sysml.CalculationUsage;
+import org.oasis.oslcop.sysml.CaseDefinition;
+import org.oasis.oslcop.sysml.CaseUsage;
+import org.oasis.oslcop.sysml.SysmlClass;
+import org.oasis.oslcop.sysml.Classifier;
+import org.oasis.oslcop.sysml.Comment;
+import org.oasis.oslcop.sysml.ConjugatedPortDefinition;
+import org.oasis.oslcop.sysml.Conjugation;
+import org.oasis.oslcop.sysml.ConnectionDefinition;
+import org.oasis.oslcop.sysml.ConnectionUsage;
+import org.oasis.oslcop.sysml.Connector;
+import org.oasis.oslcop.sysml.ConstraintDefinition;
+import org.oasis.oslcop.sysml.ConstraintUsage;
+import org.oasis.oslcop.sysml.DataType;
+import org.oasis.oslcop.sysml.Definition;
+import org.oasis.oslcop.sysml.Documentation;
+import org.oasis.oslcop.sysml.Element;
+import org.oasis.oslcop.sysml.EnumerationDefinition;
+import org.oasis.oslcop.sysml.EnumerationUsage;
+import org.oasis.oslcop.sysml.Expression;
+import org.oasis.oslcop.sysml.Feature;
+import org.oasis.oslcop.sysml.FeatureMembership;
+import org.oasis.oslcop.sysml.FeatureTyping;
+import org.oasis.oslcop.sysml.Function;
+import org.oasis.oslcop.sysml.Generalization;
+import org.oasis.oslcop.sysml.SysmlImport;
+import org.oasis.oslcop.sysml.IndividualDefinition;
+import org.oasis.oslcop.sysml.IndividualUsage;
+import org.oasis.oslcop.sysml.InterfaceDefinition;
+import org.oasis.oslcop.sysml.InterfaceUsage;
+import org.oasis.oslcop.sysml.ItemDefinition;
+import org.oasis.oslcop.sysml.ItemUsage;
+import org.oasis.oslcop.sysml.Membership;
+import org.oasis.oslcop.sysml.Multiplicity;
+import org.oasis.oslcop.sysml.Namespace;
+import org.oasis.oslcop.sysml.SysmlPackage;
+import org.oasis.oslcop.sysml.PartDefinition;
+import org.oasis.oslcop.sysml.PartUsage;
+import org.eclipse.lyo.oslc.domains.Person;
+import org.oasis.oslcop.sysml.PortConjugation;
+import org.oasis.oslcop.sysml.PortDefinition;
+import org.oasis.oslcop.sysml.PortUsage;
+import org.oasis.oslcop.sysml.Predicate;
+import org.oasis.oslcop.sysml.Redefinition;
+import org.oasis.oslcop.sysml.ReferenceUsage;
+import org.oasis.oslcop.sysml.Relationship;
+import org.oasis.oslcop.sysml.RenderingDefinition;
+import org.oasis.oslcop.sysml.RenderingUsage;
+import org.oasis.oslcop.sysml.RequirementDefinition;
+import org.oasis.oslcop.sysml.RequirementUsage;
+import org.eclipse.lyo.oslc.domains.am.Resource;
+import org.oasis.oslcop.sysml.StateUsage;
+import org.oasis.oslcop.sysml.Step;
+import org.oasis.oslcop.sysml.Structure;
+import org.oasis.oslcop.sysml.Subsetting;
+import org.oasis.oslcop.sysml.Succession;
+import org.oasis.oslcop.sysml.Superclassing;
+import org.oasis.oslcop.sysml.TextualRepresentation;
+import org.oasis.oslcop.sysml.TransitionUsage;
+import org.oasis.oslcop.sysml.Type;
+import org.oasis.oslcop.sysml.TypeFeaturing;
+import org.oasis.oslcop.sysml.Usage;
+import org.oasis.oslcop.sysml.VariantMembership;
+import org.oasis.oslcop.sysml.VerificationCaseDefinition;
+import org.oasis.oslcop.sysml.VerificationCaseUsage;
+import org.oasis.oslcop.sysml.ViewDefinition;
+import org.oasis.oslcop.sysml.ViewUsage;
+import org.oasis.oslcop.sysml.ViewpointDefinition;
+import org.oasis.oslcop.sysml.ViewpointUsage;
 
 
 
@@ -73,17 +152,17 @@ public class SysmlServerManager {
     public static ServiceProviderInfo[] getServiceProviderInfos(HttpServletRequest httpServletRequest)
     {
         ServiceProviderInfo[] serviceProviderInfos = {};
-
+        
         // Start of user code "ServiceProviderInfo[] getServiceProviderInfos(...)"
         serviceProviderInfos = CapellaClient.getProjects().toArray(new ServiceProviderInfo[0]);
         // End of user code
-        
         return serviceProviderInfos;
     }
 
     public static List<Subsetting> querySubsettings(HttpServletRequest httpServletRequest, final String projectId, String where, String prefix, int page, int limit)
     {
         List<Subsetting> resources = null;
+        
         
         // Start of user code querySubsettings
         // TODO Implement code to return a set of resources.
@@ -110,6 +189,8 @@ public class SysmlServerManager {
     public static List<Element> queryElements(HttpServletRequest httpServletRequest, final String projectId, String where, String prefix, int page, int limit)
     {
         List<Element> resources = null;
+        
+        
         // Start of user code queryElements
         resources = CapellaClient.getProjectElements(projectId,page,limit);
         // End of user code
@@ -118,6 +199,8 @@ public class SysmlServerManager {
     public static List<Element> ElementSelector(HttpServletRequest httpServletRequest, final String projectId, String terms)   
     {
         List<Element> resources = null;
+        
+        
         // Start of user code ElementSelector
         resources = CapellaClient.selectProjectElements(projectId,terms);
         // End of user code
@@ -129,6 +212,8 @@ public class SysmlServerManager {
     public static List<SysmlClass> querySysmlClasss(HttpServletRequest httpServletRequest, final String projectId, String where, String prefix, int page, int limit)
     {
         List<SysmlClass> resources = null;
+        
+        
         // Start of user code querySysmlClasss
         resources = CapellaClient.getProjectSysmlClasses(projectId,page,limit);
         // End of user code
@@ -361,6 +446,31 @@ public class SysmlServerManager {
 
 
 
+    public static List<SysmlPackage> querySysmlPackages(HttpServletRequest httpServletRequest, final String projectId, String where, String prefix, int page, int limit)
+    {
+        List<SysmlPackage> resources = null;
+        
+        
+        // Start of user code querySysmlPackages
+        resources = CapellaClient.getSysmlPackages(projectId, page, limit);
+        // End of user code
+        return resources;
+    }
+    public static List<SysmlPackage> SysmlPackageSelector(HttpServletRequest httpServletRequest, final String projectId, String terms)   
+    {
+        List<SysmlPackage> resources = null;
+        
+        
+        // Start of user code SysmlPackageSelector
+        // TODO Implement code to return a set of resources, based on search criteria 
+        // An empty List should imply that no resources where found.
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return resources;
+    }
+
+
+
 
     public static Subsetting getSubsetting(HttpServletRequest httpServletRequest, final String projectId, final String id)
     {
@@ -394,6 +504,7 @@ public class SysmlServerManager {
     public static SysmlClass getSysmlClass(HttpServletRequest httpServletRequest, final String projectId, final String id)
     {
         SysmlClass aResource = null;
+        
         
         // Start of user code getSysmlClass
         aResource = CapellaClient.getSysmlClassById(projectId,id);
@@ -514,6 +625,20 @@ public class SysmlServerManager {
     }
 
 
+    public static SysmlPackage getSysmlPackage(HttpServletRequest httpServletRequest, final String projectId, final String id)
+    {
+        SysmlPackage aResource = null;
+        
+        
+        // Start of user code getSysmlPackage
+        // TODO Implement code to return a resource
+        // return 'null' if the resource was not found.
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return aResource;
+    }
+
+
 
     public static String getETagFromAttributeUsage(final AttributeUsage aResource)
     {
@@ -573,6 +698,15 @@ public class SysmlServerManager {
     {
         String eTag = null;
         // Start of user code getETagFromGeneralization
+        // TODO Implement code to return an ETag for a particular resource
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return eTag;
+    }
+    public static String getETagFromSysmlPackage(final SysmlPackage aResource)
+    {
+        String eTag = null;
+        // Start of user code getETagFromSysmlPackage
         // TODO Implement code to return an ETag for a particular resource
         // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code

@@ -78,29 +78,24 @@ import org.capella.oslc.sysml.SysmlServerManager;
 import org.capella.oslc.sysml.SysmlServerConstants;
 import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
-import org.oasis.oslcop.sysml.Element;
-
-
+import org.oasis.oslcop.sysml.SysmlPackage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
-import org.oasis.oslcop.sysml.Generalization;
-import org.oasis.oslcop.sysml.Relationship;
-import org.oasis.oslcop.sysml.SysmlClass;
 // End of user code
 
 // Start of user code pre_class_code
 // End of user code
-@Path("projects/{projectId}/elements")
-@Api(value = "Web Service for {" + SysmlDomainConstants.ELEMENT_LOCALNAME + "}")
-public class ElementService
+@Path("projects/{projectId}/packages")
+@Api(value = "Web Service for {" + SysmlDomainConstants.PACKAGE_LOCALNAME + "}")
+public class PackageService
 {
     @Context private HttpServletRequest httpServletRequest;
     @Context private HttpServletResponse httpServletResponse;
     @Context private UriInfo uriInfo;
 
-    private static final Logger log = LoggerFactory.getLogger(ElementService.class);
+    private static final Logger log = LoggerFactory.getLogger(PackageService.class);
 
     // Start of user code class_attributes
     // End of user code
@@ -108,7 +103,7 @@ public class ElementService
     // Start of user code class_methods
     // End of user code
 
-    public ElementService()
+    public PackageService()
     {
         super();
     }
@@ -126,42 +121,26 @@ public class ElementService
     @Path("{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
-        value = "GET for resources of type {'" + SysmlDomainConstants.ELEMENT_LOCALNAME + "'}",
-        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.ELEMENT_TYPE + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}" +
-            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.ELEMENT_PATH + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}",
+        value = "GET for resources of type {'" + SysmlDomainConstants.PACKAGE_LOCALNAME + "'}",
+        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.PACKAGE_TYPE + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}",
         produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
     )
-    public Element getElement(
+    public SysmlPackage getSysmlPackage(
                 @PathParam("projectId") final String projectId, @PathParam("id") final String id
         ) throws IOException, ServletException, URISyntaxException
     {
         // Start of user code getResource_init
         // End of user code
 
-        final Element aElement = SysmlServerManager.getElement(httpServletRequest, projectId, id);
+        final SysmlPackage aSysmlPackage = SysmlServerManager.getSysmlPackage(httpServletRequest, projectId, id);
 
-        if (aElement != null) {
-            // Start of user code getElement
-            if(aElement instanceof SysmlClass) {
-                httpServletResponse.setHeader("ETag", SysmlServerManager.getETagFromSysmlClass((SysmlClass) aElement));
-                httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
-                return aElement;
-            }
-            if(aElement instanceof Generalization) {
-                httpServletResponse.setHeader("ETag", SysmlServerManager.getETagFromGeneralization((Generalization) aElement));
-                httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
-                return aElement;
-            }
-            if(aElement instanceof Relationship) {
-                httpServletResponse.setHeader("ETag", SysmlServerManager.getETagFromRelationship((Relationship) aElement));
-                httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
-                return aElement;
-            }
-
+        if (aSysmlPackage != null) {
+            // Start of user code getSysmlPackage
             // End of user code
-            httpServletResponse.setHeader("ETag", SysmlServerManager.getETagFromElement(aElement));
+            httpServletResponse.setHeader("ETag", SysmlServerManager.getETagFromSysmlPackage(aSysmlPackage));
             httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
-            return aElement;
+            return aSysmlPackage;
         }
 
         throw new WebApplicationException(Status.NOT_FOUND);
@@ -171,44 +150,26 @@ public class ElementService
     @Path("{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
-        value = "GET for resources of type {'" + SysmlDomainConstants.ELEMENT_LOCALNAME + "'}",
-        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.ELEMENT_TYPE + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}" +
-            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.ELEMENT_PATH + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}",
+        value = "GET for resources of type {'" + SysmlDomainConstants.PACKAGE_LOCALNAME + "'}",
+        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.PACKAGE_TYPE + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}",
         produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
     )
-    public void getElementAsHtml(
+    public void getSysmlPackageAsHtml(
         @PathParam("projectId") final String projectId, @PathParam("id") final String id
         ) throws ServletException, IOException, URISyntaxException
     {
-        // Start of user code getElementAsHtml_init
+        // Start of user code getSysmlPackageAsHtml_init
         // End of user code
 
-        final Element aElement = SysmlServerManager.getElement(httpServletRequest, projectId, id);
+        final SysmlPackage aSysmlPackage = SysmlServerManager.getSysmlPackage(httpServletRequest, projectId, id);
 
-        if (aElement != null) {
-            httpServletRequest.setAttribute("aElement", aElement);
-            // Start of user code getElementAsHtml_setAttributes
-            if(aElement instanceof SysmlClass) {
-                httpServletRequest.setAttribute("aSysmlClass", aElement);
-                RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlclass.jsp");
-                rd.forward(httpServletRequest,httpServletResponse);
-                return;
-            }
-            if(aElement instanceof Generalization) {
-                httpServletRequest.setAttribute("aGeneralization", aElement);
-                RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/generalization.jsp");
-                rd.forward(httpServletRequest,httpServletResponse);
-                return;
-            }
-            if(aElement instanceof Relationship) {
-                httpServletRequest.setAttribute("aRelationship", aElement);
-                RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/relationship.jsp");
-                rd.forward(httpServletRequest,httpServletResponse);
-                return;
-            }
+        if (aSysmlPackage != null) {
+            httpServletRequest.setAttribute("aSysmlPackage", aSysmlPackage);
+            // Start of user code getSysmlPackageAsHtml_setAttributes
             // End of user code
 
-            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/element.jsp");
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackage.jsp");
             rd.forward(httpServletRequest,httpServletResponse);
             return;
         }
@@ -220,12 +181,12 @@ public class ElementService
     @Path("{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
-        value = "GET for resources of type {'" + SysmlDomainConstants.ELEMENT_LOCALNAME + "'}",
-        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.ELEMENT_TYPE + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}" +
-            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.ELEMENT_PATH + "\">" + SysmlDomainConstants.ELEMENT_LOCALNAME + "</a>" + "'}",
+        value = "GET for resources of type {'" + SysmlDomainConstants.PACKAGE_LOCALNAME + "'}",
+        notes = "GET for resources of type {'" + "<a href=\"" + SysmlDomainConstants.PACKAGE_TYPE + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + SysmlDomainConstants.PACKAGE_PATH + "\">" + SysmlDomainConstants.PACKAGE_LOCALNAME + "</a>" + "'}",
         produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
     )
-    public Compact getElementCompact(
+    public Compact getSysmlPackageCompact(
         @PathParam("projectId") final String projectId, @PathParam("id") final String id
         ) throws ServletException, IOException, URISyntaxException
     {
@@ -235,17 +196,17 @@ public class ElementService
         String largePreviewHintHeight = "20em";
         String largePreviewHintWidth = "45em";
 
-        // Start of user code getElementCompact_init
+        // Start of user code getSysmlPackageCompact_init
         //TODO: adjust the preview height & width values from the default values provided above.
         // End of user code
 
-        final Element aElement = SysmlServerManager.getElement(httpServletRequest, projectId, id);
+        final SysmlPackage aSysmlPackage = SysmlServerManager.getSysmlPackage(httpServletRequest, projectId, id);
 
-        if (aElement != null) {
+        if (aSysmlPackage != null) {
             final Compact compact = new Compact();
 
-            compact.setAbout(aElement.getAbout());
-            compact.setTitle(aElement.toString());
+            compact.setAbout(aSysmlPackage.getAbout());
+            compact.setTitle(aSysmlPackage.toString());
 
             compact.setIcon(new URI(iconUri));
 
@@ -253,13 +214,13 @@ public class ElementService
             final Preview smallPreview = new Preview();
             smallPreview.setHintHeight(smallPreviewHintHeight);
             smallPreview.setHintWidth(smallPreviewHintWidth);
-            smallPreview.setDocument(UriBuilder.fromUri(aElement.getAbout()).path("smallPreview").build());
+            smallPreview.setDocument(UriBuilder.fromUri(aSysmlPackage.getAbout()).path("smallPreview").build());
             compact.setSmallPreview(smallPreview);
 
             final Preview largePreview = new Preview();
             largePreview.setHintHeight(largePreviewHintHeight);
             largePreview.setHintWidth(largePreviewHintWidth);
-            largePreview.setDocument(UriBuilder.fromUri(aElement.getAbout()).path("largePreview").build());
+            largePreview.setDocument(UriBuilder.fromUri(aSysmlPackage.getAbout()).path("largePreview").build());
             compact.setLargePreview(largePreview);
 
             httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
@@ -272,21 +233,21 @@ public class ElementService
     @GET
     @Path("{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
-    public void getElementAsHtmlSmallPreview(
+    public void getSysmlPackageAsHtmlSmallPreview(
         @PathParam("projectId") final String projectId, @PathParam("id") final String id
         ) throws ServletException, IOException, URISyntaxException
     {
-        // Start of user code getElementAsHtmlSmallPreview_init
+        // Start of user code getSysmlPackageAsHtmlSmallPreview_init
         // End of user code
 
-        final Element aElement = SysmlServerManager.getElement(httpServletRequest, projectId, id);
+        final SysmlPackage aSysmlPackage = SysmlServerManager.getSysmlPackage(httpServletRequest, projectId, id);
 
-        if (aElement != null) {
-            httpServletRequest.setAttribute("aElement", aElement);
-            // Start of user code getElementAsHtmlSmallPreview_setAttributes
+        if (aSysmlPackage != null) {
+            httpServletRequest.setAttribute("aSysmlPackage", aSysmlPackage);
+            // Start of user code getSysmlPackageAsHtmlSmallPreview_setAttributes
             // End of user code
 
-            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/elementsmallpreview.jsp");
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackagesmallpreview.jsp");
             httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
             addCORSHeaders(httpServletResponse);
             rd.forward(httpServletRequest, httpServletResponse);
@@ -299,21 +260,21 @@ public class ElementService
     @GET
     @Path("{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
-    public void getElementAsHtmlLargePreview(
+    public void getSysmlPackageAsHtmlLargePreview(
         @PathParam("projectId") final String projectId, @PathParam("id") final String id
         ) throws ServletException, IOException, URISyntaxException
     {
-        // Start of user code getElementAsHtmlLargePreview_init
+        // Start of user code getSysmlPackageAsHtmlLargePreview_init
         // End of user code
 
-        final Element aElement = SysmlServerManager.getElement(httpServletRequest, projectId, id);
+        final SysmlPackage aSysmlPackage = SysmlServerManager.getSysmlPackage(httpServletRequest, projectId, id);
 
-        if (aElement != null) {
-            httpServletRequest.setAttribute("aElement", aElement);
-            // Start of user code getElementAsHtmlLargePreview_setAttributes
+        if (aSysmlPackage != null) {
+            httpServletRequest.setAttribute("aSysmlPackage", aSysmlPackage);
+            // Start of user code getSysmlPackageAsHtmlLargePreview_setAttributes
             // End of user code
 
-            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/elementlargepreview.jsp");
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/sysmlpackagelargepreview.jsp");
             httpServletResponse.addHeader(SysmlServerConstants.HDR_OSLC_VERSION, SysmlServerConstants.OSLC_VERSION_V2);
             addCORSHeaders(httpServletResponse);
             rd.forward(httpServletRequest, httpServletResponse);

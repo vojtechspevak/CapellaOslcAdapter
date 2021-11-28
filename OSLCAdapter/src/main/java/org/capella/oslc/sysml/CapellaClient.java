@@ -19,6 +19,7 @@ import org.oasis.oslcop.sysml.Element;
 import org.oasis.oslcop.sysml.Generalization;
 import org.oasis.oslcop.sysml.Relationship;
 import org.oasis.oslcop.sysml.SysmlClass;
+import org.oasis.oslcop.sysml.SysmlPackage;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -36,6 +37,7 @@ public class CapellaClient {
 	private static final String API_URL_SYSML_CLASSES_PATH = "/sysmlclass";
 	private static final String API_URL_RELATIONSHIP_PATH = "/relationship";
 	private static final String API_URL_GENERALIZATION_PATH = "/generalization";
+	private static final String API_URL_SYSML_PACKAGES_PATH = "/sysmlpackage";
 	private static final String API_URL_RESOURCES_PATH = "/resources";
 	
 	private static String getApiUrlElementsPath(String projectName, int page, int limit) {
@@ -74,6 +76,10 @@ public class CapellaClient {
 		return API_URL_BASE + API_URL_GENERALIZATION_PATH + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
 	} 
 
+	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit ) {
+		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
+		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
+	}
 	
 	private static String encodeUrlText(String text) {
 		try {
@@ -295,6 +301,27 @@ public class CapellaClient {
 			}
 			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
 			java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {}.getType();
+		    Gson gson = new Gson();
+		    return gson.fromJson(jsonObject.get("elements"),  listType);
+		    		
+		} catch (IOException e) {
+			Log.warn(CapellaClient.class, e.getMessage());
+		}
+		return classes;
+	}
+
+	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit) {
+		List<SysmlPackage> classes = new ArrayList<SysmlPackage>();
+		try {
+			URL url = new URL(getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId,page,limit+1));
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			int status = con.getResponseCode();
+			if(status != 200) {
+				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
+			}
+			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
+			java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {}.getType();
 		    Gson gson = new Gson();
 		    return gson.fromJson(jsonObject.get("elements"),  listType);
 		    		
