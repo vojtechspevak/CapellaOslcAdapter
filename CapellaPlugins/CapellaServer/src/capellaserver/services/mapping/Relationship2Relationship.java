@@ -1,10 +1,6 @@
 package capellaserver.services.mapping;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.eclipse.emf.ecore.EObject;
-import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.capellacore.NamedElement;
 import org.polarsys.capella.core.data.capellacore.Relationship;
 

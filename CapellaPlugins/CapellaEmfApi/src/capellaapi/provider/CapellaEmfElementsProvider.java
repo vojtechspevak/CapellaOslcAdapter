@@ -25,7 +25,7 @@ public class CapellaEmfElementsProvider implements ICapellaEmfElementsProvider {
 	}
 
 	@Override
-	public List<EObject> getProjectElementsByType(String projectName, Class clazz) {
+	public List<EObject> getProjectElementsByType(String projectName, Class<?> clazz) {
 		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
 		return _aqlSearcher.getProjectElementsByType(searchRoot, clazz);
 	}
@@ -43,7 +43,7 @@ public class CapellaEmfElementsProvider implements ICapellaEmfElementsProvider {
 	}
 
 	@Override
-	public List<EObject> getProjectElementsFullText(String projectName, String searchText, Class clazz) {
+	public List<EObject> getProjectElementsFullText(String projectName, String searchText, Class<?> clazz) {
 		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
 		return _aqlSearcher.getProjectElementsByFullTextSearch(searchRoot, searchText, clazz);
 	}
@@ -52,6 +52,18 @@ public class CapellaEmfElementsProvider implements ICapellaEmfElementsProvider {
 	public List<EObject> getProjectElementsFullText(String projectName, String searchText, String typeString) {
 		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
 		return _aqlSearcher.getProjectElementsByFullTextSearch(searchRoot, searchText, typeString);
+	}
+
+	@Override
+	public List<EObject> getProjectElementsByType(String projectName, List<Class<?>> classes) {
+		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
+		return _aqlSearcher.getProjectElementsByType(searchRoot, classes);
+	}
+
+	@Override
+	public List<EObject> getProjectElementsFullText(String projectName, String searchText, List<Class<?>> classes) {
+		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
+		return _aqlSearcher.getProjectElementsByFullTextSearch(searchRoot, searchText, classes);
 	}
 
 }

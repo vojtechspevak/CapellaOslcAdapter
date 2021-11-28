@@ -15,7 +15,7 @@ import capellaserver.services.ProjectService;
 
 public class ProjectServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 1L;
 
    
     @Override

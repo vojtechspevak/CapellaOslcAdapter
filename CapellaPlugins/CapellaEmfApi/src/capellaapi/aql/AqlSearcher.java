@@ -1,7 +1,9 @@
 package capellaapi.aql;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.acceleo.query.runtime.EvaluationResult;
 import org.eclipse.acceleo.query.runtime.IQueryEnvironment;
@@ -91,10 +93,27 @@ public class AqlSearcher {
 		return getProjectElementsByType(searchRoot, typeString);
 	}
 
-	public List<EObject> getProjectElementsByType(EObject searchRoot, String typeString) {
+	public List<EObject> getProjectElementsByType(EObject searchRoot, Collection<Class<?>> classes) {
+		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
+		return getProjectElementsByType(searchRoot, typeStrings);
+	}
+
+	public List<EObject> getProjectElementsByType(EObject searchRoot,  String typeString) {
 		String query = AqlQueryString.FindByTypeQuery(typeString);
 		Object result = search(searchRoot, query);
 		Object isRootOfSearchedType =search(searchRoot, AqlQueryString.IsSearchRootOfType(typeString));
+		List<EObject> resultList = (List<EObject>) result;
+		if(Boolean.TRUE.equals(isRootOfSearchedType)) {
+			resultList.add(0,searchRoot);
+		};
+		return resultList;
+	}
+
+	
+	public List<EObject> getProjectElementsByType(EObject searchRoot,  List<String> typeStrings) {
+		String query = AqlQueryString.FindByTypeQuery(typeStrings);
+		Object result = search(searchRoot, query);
+		Object isRootOfSearchedType =search(searchRoot, AqlQueryString.IsSearchRootOfType(typeStrings));
 		List<EObject> resultList = (List<EObject>) result;
 		if(Boolean.TRUE.equals(isRootOfSearchedType)) {
 			resultList.add(0,searchRoot);
@@ -106,7 +125,14 @@ public class AqlSearcher {
 		String typeString = getAqlTypeNameFromClass(clazz);
 		return getProjectElementsByFullTextSearch(searchRoot,searchText,typeString); 
 	}
+
+	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, String searchText, List<Class<?>> classes) {
+		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
+		return getProjectElementsByFullTextSearch(searchRoot,typeStrings,searchText); 
+	}
+
 	
+	//TODO refactor, keep just the List version and adapt to it in provider 
 	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, String searchText, String typeString) {
 		String query = AqlQueryString.getFullTextSearchQuery(searchText,typeString);
 		Object result = search(searchRoot, query);
@@ -117,6 +143,18 @@ public class AqlSearcher {
 		};
 		return resultList; 
 	}
+
+	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot,  List<String> typeStrings, String searchText) {
+		String query = AqlQueryString.getFullTextSearchQuery(searchText,typeStrings);
+		Object result = search(searchRoot, query);
+		List<EObject> resultList = (List<EObject>) result;
+		Object shouldIncludeRoot = search(searchRoot, AqlQueryString.shouldIncludeRootInSearchResult(searchText,typeStrings));
+		if(Boolean.TRUE.equals(shouldIncludeRoot)) {
+			resultList.add(0,searchRoot);
+		};
+		return resultList; 
+	}
+
 	
 	private Object search(EObject searchRoot, String query) {
 			QueryBuilderEngine builder = new QueryBuilderEngine(_queryEnvironment);

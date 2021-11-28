@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EObject;
 
 import capellaserver.domain.Element;
@@ -75,6 +73,14 @@ public class Mapper {
 			sourceClass = sourceClass.getSuperclass();
 		}
 		return null;
+	}
+
+	public static List<Class<?>> getSourceClassesForTargetClass(Class<?> targetElementClass) {
+		return _mappings
+				.stream()
+				.filter(m -> m.getTargetClass().equals(targetElementClass))
+				.map(m -> {return m.getSourceClass();})
+				.collect(Collectors.toList());
 	}
 	
 }
