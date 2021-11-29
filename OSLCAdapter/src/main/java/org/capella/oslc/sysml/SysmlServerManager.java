@@ -365,9 +365,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryPortUsages
-        // TODO Implement code to return a set of resources.
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.getPortUsages(projectId, page, limit);
         // End of user code
         return resources;
     }
@@ -377,9 +375,7 @@ public class SysmlServerManager {
         
         
         // Start of user code PortUsageSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.selectPortUsages(projectId, terms);
         // End of user code
         return resources;
     }

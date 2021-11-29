@@ -1,6 +1,7 @@
 package capellaserver.services.mapping;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +24,16 @@ public class Mapper {
 		_mappings.add(new Class2SysmlClass());
 		_mappings.add(new Generalization2Generalization());
 		_mappings.add(new Relationship2Relationship());
+		_mappings.add(new LogicalComponent2SysmlClass());
+		_mappings.add(new ComponentExchange2Connector());
+		_mappings.add(new ComponentPort2PortUsage());
 	}
 
 	public static Element map(EObject source, String linkBaseUrl){
 		if(source == null) {
 			return null;
 		}
-		IMapping mapping = findMostSuitableMapping(source);
+		IMapping mapping = findMostSuitableMapping(source,_mappings);
 		if (mapping == null) {
 			throw new UnsupportedOperationException("Mapping not found.");
 		}
@@ -38,22 +42,36 @@ public class Mapper {
 	}
 
 	public static List<Element> map(List<EObject> source, Class<?> targetClass, String linkBaseUrl){
+		ArrayList<Element> result = new ArrayList<Element>(source.size());
 		if(source.size() == 0) {
-			return new ArrayList<Element>();
-		}
-		IMapping mapping = _mappings
-				.stream()
-				.filter(m -> m.getTargetClass().equals(targetClass) 
-						&& m.getSourceClass().isAssignableFrom(source.get(0).getClass()))
-				.findFirst()
-				.orElse(null);
-		if (mapping == null) {
-			throw new UnsupportedOperationException("Mapping not found.");
+			return result;
 		}
 		
-		return source.stream()
-				.map(s -> mapping.map(s, linkBaseUrl))
-				.collect(Collectors.toList());
+		List<IMapping> targetMappings = _mappings
+				.stream()
+				.filter(m -> m.getTargetClass().equals(targetClass)).collect(Collectors.toList());
+
+		if (targetMappings.isEmpty()) {
+			throw new UnsupportedOperationException("Mapping not found.");
+		}
+
+		// this is done to avoid the type checking of each element if it is not necessary
+		if (targetMappings.size() == 1) {
+			return source.stream()
+					.map(s -> targetMappings.get(0).map(s, linkBaseUrl))
+					.collect(Collectors.toList());
+		}
+		
+		// if the reflection causes performance issues for large sets of resources, this can be rewritten to a form 
+		// where the found  Class -> IMapping pairs are cached and not computed repeatedly
+		for(EObject eObject : source) {
+			IMapping mapping = findMostSuitableMapping(eObject, targetMappings);
+			if(mapping == null) {
+				throw new UnsupportedOperationException("Mapping not found.");
+			}
+			result.add(mapping.map(eObject, linkBaseUrl));
+		}
+		return result;
 	}
 	
 	/**
@@ -62,11 +80,13 @@ public class Mapper {
 	 * @param source source object to find the mapping for
 	 * @return best suitable mapping or null, if none was found
 	 */
-	private static IMapping findMostSuitableMapping(EObject source) {
+	private static IMapping findMostSuitableMapping(EObject source, List<IMapping> mappings) {
 		Class<?> sourceClass = source.getClass();
+	
 		while (sourceClass != null) {
-			for(IMapping mapping : _mappings) {
-				if(mapping.getSourceClass().isAssignableFrom(sourceClass)) {
+			List<Class<?>> interfaces = Arrays.asList(sourceClass.getInterfaces());
+			for(IMapping mapping : mappings) {
+				if(interfaces.contains(mapping.getSourceClass()) || sourceClass.equals(mapping.getSourceClass())) {
 					return mapping;
 				}
 			}

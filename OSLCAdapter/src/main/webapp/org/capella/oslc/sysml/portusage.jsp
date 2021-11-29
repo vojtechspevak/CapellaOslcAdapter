@@ -1052,19 +1052,9 @@
             <dd class="col-sm-9">
             <ul>
             <%
-            for(Link next : aPortUsage.getType()) {
-                if (next.getValue() == null) {
-                    out.write("<li>" + "<em>null</em>" + "</li>");
-                }
-                else {
-                    %>
-                    <li>
-                    <jsp:include page="/org/capella/oslc/sysml/typetohtml.jsp">
-                        <jsp:param name="resourceUri" value="<%=next.getValue()%>"/> 
-                        </jsp:include>
-                    </li>
-                    <%
-                }
+            Iterator<String> typeItr = aPortUsage.getType().iterator();
+            while(typeItr.hasNext()) {
+                out.write("<li>" + typeItr.next().toString() + "</li>");
             }
             %>
             </ul>

@@ -57,4 +57,11 @@ public abstract class AbstractMapping implements IMapping {
 		}
 	}
 
+	protected void checkIfSourceHasCorrectType(EObject source) {
+		if(!(_source.isAssignableFrom(source.getClass()))) {
+			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type " + _target.getSimpleName();
+			throw new IllegalArgumentException(errorMessage);
+		}
+	}
+
 }

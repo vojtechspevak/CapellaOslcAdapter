@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import capellaserver.domain.Link;
-
 public class Classifier extends Type {
 	private Set<Link> ownedSuperclassing = new HashSet<Link>();
 

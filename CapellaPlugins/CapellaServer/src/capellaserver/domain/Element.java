@@ -4,9 +4,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import capellaserver.domain.Link;
-import capellaserver.domain.Resource;
-
 public class Element extends Resource {
 	private String sysmlIdentifier;
 	private String name;

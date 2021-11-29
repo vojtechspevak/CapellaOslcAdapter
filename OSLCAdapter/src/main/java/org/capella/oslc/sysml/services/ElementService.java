@@ -86,6 +86,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
 import org.oasis.oslcop.sysml.Generalization;
+import org.oasis.oslcop.sysml.PortUsage;
 import org.oasis.oslcop.sysml.Relationship;
 import org.oasis.oslcop.sysml.SysmlClass;
 import org.oasis.oslcop.sysml.SysmlPackage;
@@ -204,6 +205,12 @@ public class ElementService
             if(aElement instanceof Generalization) {
                 httpServletRequest.setAttribute("aGeneralization", aElement);
                 RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/generalization.jsp");
+                rd.forward(httpServletRequest,httpServletResponse);
+                return;
+            }
+            if(aElement instanceof PortUsage) {
+                httpServletRequest.setAttribute("aPortUsage", aElement);
+                RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/org/capella/oslc/sysml/portusage.jsp");
                 rd.forward(httpServletRequest,httpServletResponse);
                 return;
             }

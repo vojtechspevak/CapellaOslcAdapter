@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import capellaserver.domain.Link;
-
 public class Namespace extends Element {
 	private Set<Link> ownedMembership_comp = new HashSet<Link>();
 	private Set<Link> ownedMember = new HashSet<Link>();

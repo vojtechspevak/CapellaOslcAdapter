@@ -4,7 +4,13 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Relationship extends Element {
+public class Connector extends Feature {
+	private Boolean isDirected;
+	private Set<Link> relatedFeature = new HashSet<Link>();
+	private Set<Link> association = new HashSet<Link>();
+	private Set<Link> connectorEnd = new HashSet<Link>();
+	private Link sourceFeature;
+	private Set<Link> targetFeature = new HashSet<Link>();
 	private Set<Link> relatedElement = new HashSet<Link>();
 	private Set<Link> target = new HashSet<Link>();
 	private Set<Link> sysmlSource = new HashSet<Link>();
@@ -12,12 +18,12 @@ public class Relationship extends Element {
 	private Set<Link> ownedRelatedElement_comp = new HashSet<Link>();
 	private Set<Link> ownedRelatedElement = new HashSet<Link>();
 
-	public Relationship() {
+	public Connector() {
 		super();
 
 	}
 
-	public Relationship(final URI about) {
+	public Connector(final URI about) {
 		super(about);
 
 	}
@@ -31,7 +37,7 @@ public class Relationship extends Element {
 
 		if (asLocalResource) {
 			result = result
-					+ "{a Local Relationship Resource} - update Relationship.toString() to present resource as desired.";
+					+ "{a Local Connector Resource} - update Connector.toString() to present resource as desired.";
 		} else {
 			result = String.valueOf(getAbout());
 		}
@@ -39,6 +45,22 @@ public class Relationship extends Element {
 		result = getShortTitle();
 
 		return result;
+	}
+
+	public void addRelatedFeature(final Link relatedFeature) {
+		this.relatedFeature.add(relatedFeature);
+	}
+
+	public void addAssociation(final Link association) {
+		this.association.add(association);
+	}
+
+	public void addConnectorEnd(final Link connectorEnd) {
+		this.connectorEnd.add(connectorEnd);
+	}
+
+	public void addTargetFeature(final Link targetFeature) {
+		this.targetFeature.add(targetFeature);
 	}
 
 	public void addRelatedElement(final Link relatedElement) {
@@ -59,6 +81,30 @@ public class Relationship extends Element {
 
 	public void addOwnedRelatedElement(final Link ownedRelatedElement) {
 		this.ownedRelatedElement.add(ownedRelatedElement);
+	}
+
+	public Boolean isIsDirected() {
+		return isDirected;
+	}
+
+	public Set<Link> getRelatedFeature() {
+		return relatedFeature;
+	}
+
+	public Set<Link> getAssociation() {
+		return association;
+	}
+
+	public Set<Link> getConnectorEnd() {
+		return connectorEnd;
+	}
+
+	public Link getSourceFeature() {
+		return sourceFeature;
+	}
+
+	public Set<Link> getTargetFeature() {
+		return targetFeature;
 	}
 
 	public Set<Link> getRelatedElement() {
@@ -83,6 +129,48 @@ public class Relationship extends Element {
 
 	public Set<Link> getOwnedRelatedElement() {
 		return ownedRelatedElement;
+	}
+
+	public void setIsDirected(final Boolean isDirected) {
+		this.isDirected = isDirected;
+
+	}
+
+	public void setRelatedFeature(final Set<Link> relatedFeature) {
+		this.relatedFeature.clear();
+		if (relatedFeature != null) {
+			this.relatedFeature.addAll(relatedFeature);
+		}
+
+	}
+
+	public void setAssociation(final Set<Link> association) {
+		this.association.clear();
+		if (association != null) {
+			this.association.addAll(association);
+		}
+
+	}
+
+	public void setConnectorEnd(final Set<Link> connectorEnd) {
+		this.connectorEnd.clear();
+		if (connectorEnd != null) {
+			this.connectorEnd.addAll(connectorEnd);
+		}
+
+	}
+
+	public void setSourceFeature(final Link sourceFeature) {
+		this.sourceFeature = sourceFeature;
+
+	}
+
+	public void setTargetFeature(final Set<Link> targetFeature) {
+		this.targetFeature.clear();
+		if (targetFeature != null) {
+			this.targetFeature.addAll(targetFeature);
+		}
+
 	}
 
 	public void setRelatedElement(final Set<Link> relatedElement) {

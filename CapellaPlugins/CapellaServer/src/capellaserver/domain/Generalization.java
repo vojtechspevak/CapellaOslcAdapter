@@ -2,8 +2,6 @@ package capellaserver.domain;
 
 import java.net.URI;
 
-import capellaserver.domain.Link;
-
 public class Generalization extends Relationship {
 	private Link general;
 	private Link specific;

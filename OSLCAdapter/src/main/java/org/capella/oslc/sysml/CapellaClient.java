@@ -13,8 +13,10 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.jena.atlas.logging.Log;
 import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
+import org.oasis.oslcop.sysml.Connector;
 import org.oasis.oslcop.sysml.Element;
 import org.oasis.oslcop.sysml.Generalization;
+import org.oasis.oslcop.sysml.PortUsage;
 import org.oasis.oslcop.sysml.Relationship;
 import org.oasis.oslcop.sysml.SysmlClass;
 import org.oasis.oslcop.sysml.SysmlPackage;
@@ -36,6 +38,8 @@ public class CapellaClient {
 	private static final String API_URL_GENERALIZATION_PATH = "/generalization";
 	private static final String API_URL_SYSML_PACKAGES_PATH = "/sysmlpackage";
 	private static final String API_URL_RESOURCES_PATH = "/resources";
+	private static final String API_URL_PORT_USAGES_PATH = "/portusage";
+	private static final String API_URL_CONNECTOR_PATH = "/connector";
 
 	private static String getApiResourceByIdPathUrl(String projectName, String elementId) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
@@ -96,11 +100,14 @@ public class CapellaClient {
 		if (elementTypes.contains("LogicalComponentPkgImpl")) {
 			return gson.fromJson(jsonObject, SysmlPackage.class);
 		}
-		if (elementTypes.contains("ClassImpl")) {
+		if (elementTypes.contains("ClassImpl") || elementTypes.contains("LogicalComponentImpl")) {
 			return gson.fromJson(jsonObject, SysmlClass.class);
 		}
 		if (elementTypes.contains("GeneralizationImpl")) {
 			return gson.fromJson(jsonObject, Generalization.class);
+		}
+		if (elementTypes.contains("ComponentPortImpl")) {
+			return gson.fromJson(jsonObject, PortUsage.class);
 		}
 		if (elementTypes.contains("RelationshipImpl")) {
 			return gson.fromJson(jsonObject, Relationship.class);
@@ -198,6 +205,43 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
+	public static List<PortUsage> getPortUsages(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_PORT_USAGES_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<PortUsage> selectPortUsages(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_PORT_USAGES_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+	
+	public static List<PortUsage> getConnectors(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_CONNECTOR_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Connector> selectConnectors(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_CONNECTOR_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Connector>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+	
+	
 	private static JsonObject sendGetRequest(String urlString) {
 		try {
 			URL url = new URL(urlString);

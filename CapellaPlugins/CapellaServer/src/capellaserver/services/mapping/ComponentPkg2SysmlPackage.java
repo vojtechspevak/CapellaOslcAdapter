@@ -17,10 +17,7 @@ public class ComponentPkg2SysmlPackage extends AbstractMapping implements IMappi
 	
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if(!(source instanceof LogicalComponentPkg)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type SysmlPackage";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		LogicalComponentPkg capellaElement = 
 				(LogicalComponentPkg) source;
 		SysmlPackage target = new SysmlPackage();
