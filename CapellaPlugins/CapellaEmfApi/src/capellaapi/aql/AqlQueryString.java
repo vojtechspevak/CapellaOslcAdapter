@@ -56,13 +56,13 @@ public class AqlQueryString {
 	}
 	
 	public static String getFullTextSearchQuery(String searchText, String typeString) {
- 		return String.format("%s.eAllContents(%s)->select(e | e.name.contains('%s') or e.description.contains('%s') or e.getId.contains('%s'))", 
+ 		return String.format("%s.eAllContents(%s)->select(e | e.name.contains('%s') or e.description.contains('%s') or e.id.contains('%s'))", 
 				VARIABLE_NAME,typeString,searchText,searchText,searchText);
 	}
 	
 	public static String getFullTextSearchQuery(String searchText, List<String> typeStrings) {
 		String queryByType = FindByTypeQuery(typeStrings);
- 		return String.format("%s->select(e | e.name.contains('%s') or e.description.contains('%s') or e.getId.contains('%s'))", 
+ 		return String.format("%s->select(e | e.id.contains('%s') or e.name.contains('%s') or e.description.contains('%s'))", 
 				queryByType,searchText,searchText,searchText);
 	}
 

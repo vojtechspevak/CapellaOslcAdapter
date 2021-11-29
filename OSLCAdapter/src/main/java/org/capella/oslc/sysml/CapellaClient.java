@@ -3,7 +3,6 @@ package org.capella.oslc.sysml;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -14,7 +13,6 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.jena.atlas.logging.Log;
 import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
-//import org.oasis.oslcop.sysml.SysmlClass;
 import org.oasis.oslcop.sysml.Element;
 import org.oasis.oslcop.sysml.Generalization;
 import org.oasis.oslcop.sysml.Relationship;
@@ -32,55 +30,37 @@ public class CapellaClient {
 
 	private static final String API_URL_BASE = "http://localhost:3333";
 	private static final String API_URL_PROJECTS_PATH = "/projects";
-	private static final String API_URL_ELEMENTS_IDS_PATH = "/resources?projectName=";
 	private static final String API_URL_ELEMENTS_PATH = "/element";
 	private static final String API_URL_SYSML_CLASSES_PATH = "/sysmlclass";
 	private static final String API_URL_RELATIONSHIP_PATH = "/relationship";
 	private static final String API_URL_GENERALIZATION_PATH = "/generalization";
 	private static final String API_URL_SYSML_PACKAGES_PATH = "/sysmlpackage";
 	private static final String API_URL_RESOURCES_PATH = "/resources";
-	
-	private static String getApiUrlElementsPath(String projectName, int page, int limit) {
+
+	private static String getApiResourceByIdPathUrl(String projectName, String elementId) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_ELEMENTS_PATH + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
+		return API_URL_BASE + API_URL_RESOURCES_PATH + "?projectName=" + projectName + "&elementId=" + elementId
+				+ "&linkBaseUrl=" + linkBaseUrl;
 	}
 
-	private static String getApiUrlElementByIdPath(String projectName, String elementId) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_RESOURCES_PATH + "?projectName=" + projectName + "&elementId=" + elementId + "&linkBaseUrl=" + linkBaseUrl;
-	}
-	
 	private static String getEncodedLinkBaseUrl(String projectName) {
 		String url = OSLC4JUtils.getPublicURI().toString() + "/services/projects/" + projectName + "/elements/";
-        return encodeUrlText(url);
+		return encodeUrlText(url);
 	}
-	
-	private static String getApiUrlElementsSelectionPath(String projectName, String searchTerm) {
+
+	private static String getApiSelectionPathUrl(String elementPath, String projectName, String searchTerm) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
 		String encodedSearchText = encodeUrlText(searchTerm);
-		return API_URL_BASE + API_URL_ELEMENTS_PATH + "?projectName=" + projectName + "&fullTextSearch="+ encodedSearchText + "&linkBaseUrl=" + linkBaseUrl;
-	}
-	
-	private static String getApiUrlSysmlClassesPath(String projectName, int page, int limit) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_SYSML_CLASSES_PATH + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
-	}
-	
-	private static String getApiUrlRelationshipsPath(String projectName, int page, int limit) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_RELATIONSHIP_PATH + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
+		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&fullTextSearch=" + encodedSearchText
+				+ "&linkBaseUrl=" + linkBaseUrl;
 	}
 
-	private static String getApiUrlGeneralizationsPath(String projectName, int page, int limit) {
+	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_GENERALIZATION_PATH + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
-	} 
-
-	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit ) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&page="+ page + "&limit=" + limit + "&linkBaseUrl=" + linkBaseUrl;
+		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&page=" + page + "&limit=" + limit
+				+ "&linkBaseUrl=" + linkBaseUrl;
 	}
-	
+
 	private static String encodeUrlText(String text) {
 		try {
 			return URLEncoder.encode(text, "UTF-8");
@@ -89,254 +69,167 @@ public class CapellaClient {
 			return URLEncoder.encode(text);
 		}
 	}
-	
-	//TODO error handling - capella api not available, different error
+
+	// TODO error handling - capella api not available, different error
 	public static List<ServiceProviderInfo> getProjects() {
 		List<ServiceProviderInfo> serviceProviderInfos = new ArrayList<ServiceProviderInfo>();
-		URL url;
-		try {
-			url = new URL(API_URL_BASE + API_URL_PROJECTS_PATH);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch information about projects from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			JsonArray projectsJson = jsonObject.get("projects").getAsJsonArray();
-			for (JsonElement p : projectsJson) {
-				JsonObject jsonProject = p.getAsJsonObject();
-				ServiceProviderInfo serviceProviderInfo = new ServiceProviderInfo(); 
-				serviceProviderInfo.name = jsonProject.get("name").getAsString();
-				serviceProviderInfo.projectId = jsonProject.get("id").getAsString();
-				serviceProviderInfos.add(serviceProviderInfo);
-			}
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
+		String urlString = API_URL_BASE + API_URL_PROJECTS_PATH;
+		JsonObject jsonObject = sendGetRequest(urlString);
+		JsonArray projectsJson = jsonObject.get("projects").getAsJsonArray();
+		for (JsonElement p : projectsJson) {
+			JsonObject jsonProject = p.getAsJsonObject();
+			ServiceProviderInfo serviceProviderInfo = new ServiceProviderInfo();
+			serviceProviderInfo.name = jsonProject.get("name").getAsString();
+			serviceProviderInfo.projectId = jsonProject.get("id").getAsString();
+			serviceProviderInfos.add(serviceProviderInfo);
 		}
 		return serviceProviderInfos;
 	}
 
-	
-	public static List<Element> getProjectElements(String projectId, int page, int limit) {
-		List<Element> elements = new ArrayList<Element>();
-		try {
-			URL url = new URL(getApiUrlElementsPath(projectId,page,limit+1));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return elements;
-	}
-
-	
-	
-	//TODO handle paging
-	public static List<String> getElementsIdsForProject(String projectId) {
-		List<String> elements = new ArrayList<String>();
-		URL url;
-		try {
-			url = new URL(API_URL_BASE + API_URL_ELEMENTS_IDS_PATH + projectId);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			JsonArray elementsJson = jsonObject.get("elementIds").getAsJsonArray();
-			for (JsonElement p : elementsJson) {
-				elements.add(p.getAsString());
-			}
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return elements;
-	}
-
-	public static String getClassInfo(Class clazz) {
-		StringBuilder sb = new StringBuilder();
-		String intendation = "  ";
-		sb.append(clazz.getName());
-		for(Field f :  clazz.getDeclaredFields()) {
-			sb.append("\n").append(intendation).append(f.getName()).append(" : ").append(f.getType().getName());
-		}
-		clazz = clazz.getSuperclass();
-		while(clazz!=null) {
-			sb.append("\n").append(intendation).append("Derived from ").append(clazz.getName());
-			intendation += "  ";
-			for(Field f :  clazz.getDeclaredFields()) {
-				sb.append("\n").append(intendation).append(f.getName()).append(" : ").append(f.getType().getName());
-			}
-			clazz = clazz.getSuperclass();
-		}
-		return sb.toString();
-	}
-
 	public static Element getElementById(String projectId, String id) {
-		try {
-			URL url = new URL(getApiUrlElementByIdPath(projectId,id));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-		    Gson gson = new Gson();
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {}.getType();
-			List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
-			if (elementTypes.contains("LogicalComponentPkgImpl")) {
-			    return gson.fromJson(jsonObject, SysmlPackage.class);
-			}
-			if (elementTypes.contains("ClassImpl")) {
-			    return gson.fromJson(jsonObject, SysmlClass.class);
-			}
-			if (elementTypes.contains("GeneralizationImpl")) {
-			    return gson.fromJson(jsonObject, Generalization.class);
-			}
-			if (elementTypes.contains("RelationshipImpl")) {
-			    return gson.fromJson(jsonObject, Relationship.class);
-			}
-		    return gson.fromJson(jsonObject, Element.class);
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
+		String urlString = getApiResourceByIdPathUrl(projectId, id);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		Gson gson = new Gson();
+		java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {
+		}.getType();
+		List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
+		if (elementTypes.contains("LogicalComponentPkgImpl")) {
+			return gson.fromJson(jsonObject, SysmlPackage.class);
 		}
-		return null;
+		if (elementTypes.contains("ClassImpl")) {
+			return gson.fromJson(jsonObject, SysmlClass.class);
+		}
+		if (elementTypes.contains("GeneralizationImpl")) {
+			return gson.fromJson(jsonObject, Generalization.class);
+		}
+		if (elementTypes.contains("RelationshipImpl")) {
+			return gson.fromJson(jsonObject, Relationship.class);
+		}
+		return gson.fromJson(jsonObject, Element.class);
 	}
 
 	public static List<Element> selectProjectElements(String projectId, String terms) {
-		try {
-			URL url = new URL(getApiUrlElementsSelectionPath(projectId,terms));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return null;
+		String urlString = getApiSelectionPathUrl(API_URL_ELEMENTS_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Element> getProjectElements(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_ELEMENTS_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
 	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit) {
-		List<SysmlClass> classes = new ArrayList<SysmlClass>();
-		try {
-			URL url = new URL(getApiUrlSysmlClassesPath(projectId,page,limit+1));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return classes;
+		String urlString = getApiCollectionUrl(API_URL_SYSML_CLASSES_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static SysmlClass getSysmlClassById(String projectId, String id) {
-		try { //TODO vyextrahovat spolecnou funkcionalitu do jine metody a mozna nejaky check. staci vlastne jen url a typ listu
-			URL url = new URL(getApiUrlElementByIdPath(projectId,id));
+	public static List<SysmlClass> selectProjectSysmlClasses(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_SYSML_CLASSES_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_RELATIONSHIP_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Relationship> selectProjectRelationships(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_RELATIONSHIP_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_GENERALIZATION_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<Generalization> selectProjectGeneralizations(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_GENERALIZATION_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit) {
+		String urlString = getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId, page, limit + 1);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	public static List<SysmlPackage> selectSysmlPackages(String projectId, String terms) {
+		String urlString = getApiSelectionPathUrl(API_URL_SYSML_PACKAGES_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {
+		}.getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	private static JsonObject sendGetRequest(String urlString) {
+		try {
+			URL url = new URL(urlString);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 			int status = con.getResponseCode();
-			if(status != 200) {
+			if (status != 200) {
 				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
 			}
-		    Gson gson = new Gson();
-		    return gson.fromJson(new InputStreamReader(con.getInputStream()),  SysmlClass.class);
+			return JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
+		} catch (IOException e) {
+			Log.error(CapellaClient.class, e.getMessage());
+			throw new WebApplicationException(e.getMessage(), 500);
+		}
+	}
+
+	// TODO decide if other elements should have these as well or keep it just for the element that handles it generically
+	public static SysmlClass getSysmlClassById(String projectId, String id) {
+		try { 
+			URL url = new URL(getApiResourceByIdPathUrl(projectId, id));
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			int status = con.getResponseCode();
+			if (status != 200) {
+				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
+			}
+			Gson gson = new Gson();
+			return gson.fromJson(new InputStreamReader(con.getInputStream()), SysmlClass.class);
 		} catch (IOException e) {
 			Log.warn(CapellaClient.class, e.getMessage());
 		}
 		return null;
 	}
 
-	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit) {
-		List<Relationship> classes = new ArrayList<Relationship>();
-		try {
-			URL url = new URL(getApiUrlRelationshipsPath(projectId,page,limit+1));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return classes;
-	}
-
-
-	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit) {
-		List<Generalization> classes = new ArrayList<Generalization>();
-		try {
-			URL url = new URL(getApiUrlGeneralizationsPath(projectId,page,limit+1));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return classes;
-	}
-
-	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit) {
-		List<SysmlPackage> classes = new ArrayList<SysmlPackage>();
-		try {
-			URL url = new URL(getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId,page,limit+1));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if(status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
-			java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {}.getType();
-		    Gson gson = new Gson();
-		    return gson.fromJson(jsonObject.get("elements"),  listType);
-		    		
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-		}
-		return classes;
-	}
-
-
-//	public static String TransformQueryForElement(String where, String prefix) {
-//		where
-//	}
-	
 }

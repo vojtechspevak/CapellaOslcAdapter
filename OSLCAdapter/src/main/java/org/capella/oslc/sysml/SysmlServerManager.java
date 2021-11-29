@@ -225,9 +225,7 @@ public class SysmlServerManager {
         
         
         // Start of user code SysmlClassSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.selectProjectSysmlClasses(projectId,terms);
         // End of user code
         return resources;
     }
@@ -250,9 +248,7 @@ public class SysmlServerManager {
         
         
         // Start of user code RelationshipSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.selectProjectRelationships(projectId,terms);
         // End of user code
         return resources;
     }
@@ -275,9 +271,7 @@ public class SysmlServerManager {
         
         
         // Start of user code GeneralizationSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.selectProjectGeneralizations(projectId, terms);
         // End of user code
         return resources;
     }
@@ -462,9 +456,7 @@ public class SysmlServerManager {
         
         
         // Start of user code SysmlPackageSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        resources = CapellaClient.selectSysmlPackages(projectId, terms);
         // End of user code
         return resources;
     }
