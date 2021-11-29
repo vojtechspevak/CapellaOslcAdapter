@@ -18,12 +18,17 @@ package org.capella.oslc.sysml;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
+import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
+import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.capella.oslc.sysml.servlet.ServiceProviderCatalogSingleton;
 import org.capella.oslc.sysml.ServiceProviderInfo;
 import org.oasis.oslcop.sysml.AcceptActionUsage;
@@ -46,6 +51,7 @@ import org.oasis.oslcop.sysml.CalculationUsage;
 import org.oasis.oslcop.sysml.CaseDefinition;
 import org.oasis.oslcop.sysml.CaseUsage;
 import org.oasis.oslcop.sysml.SysmlClass;
+import org.oasis.oslcop.sysml.SysmlDomainConstants;
 import org.oasis.oslcop.sysml.Classifier;
 import org.oasis.oslcop.sysml.Comment;
 import org.oasis.oslcop.sysml.ConjugatedPortDefinition;
@@ -80,6 +86,12 @@ import org.oasis.oslcop.sysml.Namespace;
 import org.oasis.oslcop.sysml.SysmlPackage;
 import org.oasis.oslcop.sysml.PartDefinition;
 import org.oasis.oslcop.sysml.PartUsage;
+import org.eclipse.lyo.core.query.ParseException;
+import org.eclipse.lyo.core.query.QueryUtils;
+import org.eclipse.lyo.core.query.SimpleTerm;
+import org.eclipse.lyo.core.query.WhereClause;
+import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
+import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.Person;
 import org.oasis.oslcop.sysml.PortConjugation;
 import org.oasis.oslcop.sysml.PortDefinition;
@@ -92,7 +104,9 @@ import org.oasis.oslcop.sysml.RenderingDefinition;
 import org.oasis.oslcop.sysml.RenderingUsage;
 import org.oasis.oslcop.sysml.RequirementDefinition;
 import org.oasis.oslcop.sysml.RequirementUsage;
+import org.eclipse.lyo.oslc.domains.am.Oslc_amDomainConstants;
 import org.eclipse.lyo.oslc.domains.am.Resource;
+import org.eclipse.lyo.oslc.domains.jazz_am.Jazz_amDomainConstants;
 import org.oasis.oslcop.sysml.StateUsage;
 import org.oasis.oslcop.sysml.Step;
 import org.oasis.oslcop.sysml.Structure;
@@ -192,7 +206,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryElements
-        resources = CapellaClient.getProjectElements(projectId,page,limit);
+        resources = CapellaClient.getProjectElements(projectId,page,limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -215,7 +229,7 @@ public class SysmlServerManager {
         
         
         // Start of user code querySysmlClasss
-        resources = CapellaClient.getProjectSysmlClasses(projectId,page,limit);
+        resources = CapellaClient.getProjectSysmlClasses(projectId,page,limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -238,7 +252,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryRelationships
-        resources = CapellaClient.getProjectRelationships(projectId,page,limit);
+        resources = CapellaClient.getProjectRelationships(projectId,page,limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -261,7 +275,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryGeneralizations
-        resources = CapellaClient.getProjectGeneralizations(projectId,page,limit);
+        resources = CapellaClient.getProjectGeneralizations(projectId,page,limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -365,7 +379,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryPortUsages
-        resources = CapellaClient.getPortUsages(projectId, page, limit);
+        resources = CapellaClient.getPortUsages(projectId, page, limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -440,9 +454,9 @@ public class SysmlServerManager {
     {
         List<SysmlPackage> resources = null;
         
-        
-        // Start of user code querySysmlPackages
-        resources = CapellaClient.getSysmlPackages(projectId, page, limit);
+
+        // Start of user code querySysmlPackages      
+        resources = CapellaClient.getSysmlPackages(projectId, page, limit, where, prefix);
         // End of user code
         return resources;
     }
@@ -465,7 +479,7 @@ public class SysmlServerManager {
         
         
         // Start of user code queryConnectors
-        resources = CapellaClient.getConnectors(projectId, page, limit);
+        resources = CapellaClient.getConnectors(projectId, page, limit, where, prefix);
         // End of user code
         return resources;
     }

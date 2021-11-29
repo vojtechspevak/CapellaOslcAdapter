@@ -64,6 +64,11 @@
          <artifactId>oslc-domains</artifactId>
          <version>${version.lyo}</version>
       </dependency>
+         <dependency>
+         <groupId>org.eclipse.lyo.core.query</groupId>
+         <artifactId>oslc-query</artifactId>
+         <version>${version.lyo}</version>
+      </dependency>
             <dependency>
          <groupId>com.google.code.gson</groupId>
          <artifactId>gson</artifactId>

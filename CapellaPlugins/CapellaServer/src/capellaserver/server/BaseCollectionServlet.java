@@ -32,6 +32,7 @@ public abstract class BaseCollectionServlet extends HttpServlet {
 		String projectName = request.getParameter("projectName");
 		String fullTextSearch = request.getParameter("fullTextSearch");
 		String linkBaseUrl = request.getParameter("linkBaseUrl");
+		String aqlQuery = request.getParameter("aqlQuery");
 	
 		if (projectName == null) {
 			ServletHelper.setErrorResponse(response, "Project name needs to be provided");
@@ -46,7 +47,7 @@ public abstract class BaseCollectionServlet extends HttpServlet {
 			return;
 		}
 
-		List<Element> elements = collectionService.getElements(projectName);
+		List<Element> elements = collectionService.getElements(projectName,aqlQuery);
 		ServletHelper.setOkResponse(response, elements, "elements");
 	}
 }

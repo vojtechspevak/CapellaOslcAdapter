@@ -98,6 +98,20 @@ public class AqlSearcher {
 		return getProjectElementsByType(searchRoot, typeStrings);
 	}
 
+	public List<EObject> getProjectElementsByType(EObject searchRoot, Collection<Class<?>> classes, String additionalExpression) {
+		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
+		return getProjectElementsByType(searchRoot, typeStrings,additionalExpression);
+	}
+
+	
+	private List<EObject> getProjectElementsByType(EObject searchRoot, List<String> typeStrings,
+			String additionalExpression) {
+		String query = AqlQueryString.FindByTypeQuery(typeStrings);
+		query = AqlQueryString.appendExpression(query,additionalExpression);
+		Object result = search(searchRoot, query);
+		return (List<EObject>) result;
+	}
+
 	public List<EObject> getProjectElementsByType(EObject searchRoot,  String typeString) {
 		String query = AqlQueryString.FindByTypeQuery(typeString);
 		Object result = search(searchRoot, query);

@@ -9,6 +9,7 @@ public interface ICapellaEmfElementsProvider {
 	List<EObject> getAllProjectElements(String projectName);
 	EObject getProjectElement(String projectName, String elementId);
 	List<EObject> getProjectElementsByType(String projectName, List<Class<?>> classes);
+	List<EObject> getProjectElementsByTypeAndExpression(String projectName, List<Class<?>> classes, String aqlExpression);
 	List<EObject> getProjectElementsByType(String projectName, Class<?> clazz);
 	List<EObject> getProjectElementsByType(String projectName, String typeString);
 	List<EObject> getProjectElementsFullText(String projectName,String searchText, Class<?> clazz);

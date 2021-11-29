@@ -66,4 +66,10 @@ public class CapellaEmfElementsProvider implements ICapellaEmfElementsProvider {
 		return _aqlSearcher.getProjectElementsByFullTextSearch(searchRoot, searchText, classes);
 	}
 
+	@Override
+	public List<EObject> getProjectElementsByTypeAndExpression(String projectName, List<Class<?>> classes, String aqlExpression) {
+		EObject searchRoot = _projectResourceManager.getSearchRoot(projectName);
+		return _aqlSearcher.getProjectElementsByType(searchRoot, classes, aqlExpression);
+	}
+
 }

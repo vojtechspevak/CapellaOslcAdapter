@@ -100,5 +100,9 @@ public class AqlQueryString {
 		return String.format("(%s.oclIsKindOf(%s) %s.name.contains('%s') or %s.description.contains('%s') or %s.getId.contains('%s'))", 
 				VARIABLE_NAME,typeString,VARIABLE_NAME,searchText,VARIABLE_NAME,searchText,VARIABLE_NAME,searchText);
 	}
+
+	public static String appendExpression(String query, String additionalExpression) {
+		return query.concat("->select(").concat(additionalExpression).concat(")");
+	}
 	
 }

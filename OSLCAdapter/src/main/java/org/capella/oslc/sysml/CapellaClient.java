@@ -59,10 +59,16 @@ public class CapellaClient {
 				+ "&linkBaseUrl=" + linkBaseUrl;
 	}
 
-	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit) {
+	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit, String where, String prefix) {
 		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&page=" + page + "&limit=" + limit
+		String url = API_URL_BASE + elementPath + "?projectName=" + projectName + "&page=" + page + "&limit=" + limit
 				+ "&linkBaseUrl=" + linkBaseUrl;
+		if(where == null){
+			return url;
+		}
+		String aqlQuery = WhereQueryParser.parseQueryToAql(where, prefix);
+		String encodedAqlQuery = encodeUrlText(aqlQuery);
+		return url + "&aqlQuery=" + encodedAqlQuery;
 	}
 
 	private static String encodeUrlText(String text) {
@@ -127,8 +133,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<Element> getProjectElements(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_ELEMENTS_PATH, projectId, page, limit + 1);
+	public static List<Element> getProjectElements(String projectId, int page, int limit, String where, String prefix ) {
+		String urlString = getApiCollectionUrl(API_URL_ELEMENTS_PATH, projectId, page, limit + 1,where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {
 		}.getType();
@@ -136,8 +142,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_SYSML_CLASSES_PATH, projectId, page, limit + 1);
+	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_SYSML_CLASSES_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {
 		}.getType();
@@ -154,8 +160,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_RELATIONSHIP_PATH, projectId, page, limit + 1);
+	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_RELATIONSHIP_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {
 		}.getType();
@@ -172,8 +178,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_GENERALIZATION_PATH, projectId, page, limit + 1);
+	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_GENERALIZATION_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {
 		}.getType();
@@ -190,8 +196,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId, page, limit + 1);
+	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {
 		}.getType();
@@ -208,8 +214,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 
-	public static List<PortUsage> getPortUsages(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_PORT_USAGES_PATH, projectId, page, limit + 1);
+	public static List<PortUsage> getPortUsages(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_PORT_USAGES_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
 		}.getType();
@@ -226,8 +232,8 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 	
-	public static List<Connector> getConnectors(String projectId, int page, int limit) {
-		String urlString = getApiCollectionUrl(API_URL_CONNECTOR_PATH, projectId, page, limit + 1);
+	public static List<Connector> getConnectors(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getApiCollectionUrl(API_URL_CONNECTOR_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
 		java.lang.reflect.Type listType = new TypeToken<ArrayList<Connector>>() {
 		}.getType();
