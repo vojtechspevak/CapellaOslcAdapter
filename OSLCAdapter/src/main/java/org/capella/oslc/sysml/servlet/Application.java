@@ -152,6 +152,7 @@ import org.capella.oslc.sysml.services.ServiceProviderService9;
 import org.capella.oslc.sysml.services.ServiceProviderService10;
 import org.capella.oslc.sysml.services.ServiceProviderService11;
 import org.capella.oslc.sysml.services.ServiceProviderService12;
+import org.capella.oslc.sysml.services.ServiceProviderService13;
 import org.capella.oslc.sysml.services.SubsettingService;
 import org.capella.oslc.sysml.services.ElementService;
 import org.capella.oslc.sysml.services.ClassService;
@@ -164,6 +165,7 @@ import org.capella.oslc.sysml.services.PortUsageService;
 import org.capella.oslc.sysml.services.AttributeUsageService;
 import org.capella.oslc.sysml.services.PartUsageService;
 import org.capella.oslc.sysml.services.PackageService;
+import org.capella.oslc.sysml.services.ConnectorService;
 
 // Start of user code imports
 // End of user code
@@ -201,6 +203,7 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_CLASSES.add(ServiceProviderService10.class);
         RESOURCE_CLASSES.add(ServiceProviderService11.class);
         RESOURCE_CLASSES.add(ServiceProviderService12.class);
+        RESOURCE_CLASSES.add(ServiceProviderService13.class);
         RESOURCE_CLASSES.add(SubsettingService.class);
         RESOURCE_CLASSES.add(ElementService.class);
         RESOURCE_CLASSES.add(ClassService.class);
@@ -213,6 +216,7 @@ public class Application extends javax.ws.rs.core.Application {
         RESOURCE_CLASSES.add(AttributeUsageService.class);
         RESOURCE_CLASSES.add(PartUsageService.class);
         RESOURCE_CLASSES.add(PackageService.class);
+        RESOURCE_CLASSES.add(ConnectorService.class);
 
         // Catalog resources
         RESOURCE_CLASSES.add(ServiceProviderCatalogService.class);

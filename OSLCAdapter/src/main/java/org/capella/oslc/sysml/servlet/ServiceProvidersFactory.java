@@ -53,6 +53,7 @@ import org.capella.oslc.sysml.services.ServiceProviderService9;
 import org.capella.oslc.sysml.services.ServiceProviderService10;
 import org.capella.oslc.sysml.services.ServiceProviderService11;
 import org.capella.oslc.sysml.services.ServiceProviderService12;
+import org.capella.oslc.sysml.services.ServiceProviderService13;
 
 // Start of user code imports
 // End of user code
@@ -61,7 +62,7 @@ public class ServiceProvidersFactory
 {
     private static Class<?>[] RESOURCE_CLASSES =
     {
-        ServiceProviderService1.class, ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService6.class, ServiceProviderService7.class, ServiceProviderService8.class, ServiceProviderService9.class, ServiceProviderService10.class, ServiceProviderService11.class, ServiceProviderService12.class
+        ServiceProviderService1.class, ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService6.class, ServiceProviderService7.class, ServiceProviderService8.class, ServiceProviderService9.class, ServiceProviderService10.class, ServiceProviderService11.class, ServiceProviderService12.class, ServiceProviderService13.class
     };
 
     private ServiceProvidersFactory()

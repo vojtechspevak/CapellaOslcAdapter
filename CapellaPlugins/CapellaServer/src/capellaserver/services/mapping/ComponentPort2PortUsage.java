@@ -3,6 +3,7 @@ package capellaserver.services.mapping;
 import org.eclipse.emf.ecore.EObject;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.fa.ComponentPort;
+import org.polarsys.capella.core.data.fa.OrientationPortKind;
 
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
@@ -24,6 +25,8 @@ public class ComponentPort2PortUsage extends AbstractMapping implements IMapping
 			target.addFeature(new Link(createURI(linkBaseUrl + feature.getId())));
 		}
 
+		target.setIsEnd(OrientationPortKind.IN.equals(capellaElement.getOrientation()));
+		target.setIsOrdered(capellaElement.isOrdered());
 		target.setIdentifier(capellaElement.getId());
 		target.setSysmlIdentifier(capellaElement.getId());
 		target.setName(capellaElement.getName());

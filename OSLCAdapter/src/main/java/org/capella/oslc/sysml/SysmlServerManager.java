@@ -459,6 +459,29 @@ public class SysmlServerManager {
 
 
 
+    public static List<Connector> queryConnectors(HttpServletRequest httpServletRequest, final String projectId, String where, String prefix, int page, int limit)
+    {
+        List<Connector> resources = null;
+        
+        
+        // Start of user code queryConnectors
+        resources = CapellaClient.getConnectors(projectId, page, limit);
+        // End of user code
+        return resources;
+    }
+    public static List<Connector> ConnectorSelector(HttpServletRequest httpServletRequest, final String projectId, String terms)   
+    {
+        List<Connector> resources = null;
+        
+        
+        // Start of user code ConnectorSelector
+        resources = CapellaClient.selectConnectors(projectId, terms);
+        // End of user code
+        return resources;
+    }
+
+
+
 
     public static Subsetting getSubsetting(HttpServletRequest httpServletRequest, final String projectId, final String id)
     {
@@ -627,6 +650,20 @@ public class SysmlServerManager {
     }
 
 
+    public static Connector getConnector(HttpServletRequest httpServletRequest, final String projectId, final String id)
+    {
+        Connector aResource = null;
+        
+        
+        // Start of user code getConnector
+        // TODO Implement code to return a resource
+        // return 'null' if the resource was not found.
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return aResource;
+    }
+
+
 
     public static String getETagFromAttributeUsage(final AttributeUsage aResource)
     {
@@ -641,6 +678,15 @@ public class SysmlServerManager {
     {
         String eTag = null;
         // Start of user code getETagFromSysmlClass
+        // TODO Implement code to return an ETag for a particular resource
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return eTag;
+    }
+    public static String getETagFromConnector(final Connector aResource)
+    {
+        String eTag = null;
+        // Start of user code getETagFromConnector
         // TODO Implement code to return an ETag for a particular resource
         // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code

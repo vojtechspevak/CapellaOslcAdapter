@@ -183,6 +183,36 @@ public class SysmlServerResourcesFactory {
     }
     
 
+    //methods for Connector resource
+    
+    public static Connector createConnector(final String projectId, final String id)
+    {
+        return new Connector(constructURIForConnector(projectId, id));
+    }
+    
+    public static URI constructURIForConnector(final String projectId, final String id)
+    {
+        String basePath = OSLC4JUtils.getServletURI();
+        Map<String, Object> pathParameters = new HashMap<String, Object>();
+        pathParameters.put("projectId", projectId);
+        pathParameters.put("id", id);
+        String instanceURI = "projects/{projectId}/connectors/{id}";
+    
+        final UriBuilder builder = UriBuilder.fromUri(basePath);
+        return builder.path(instanceURI).buildFromMap(pathParameters);
+    }
+    
+    public static Link constructLinkForConnector(final String projectId, final String id , final String label)
+    {
+        return new Link(constructURIForConnector(projectId, id), label);
+    }
+    
+    public static Link constructLinkForConnector(final String projectId, final String id)
+    {
+        return new Link(constructURIForConnector(projectId, id));
+    }
+    
+
     //methods for Element resource
     
     public static Element createElement(final String projectId, final String id)

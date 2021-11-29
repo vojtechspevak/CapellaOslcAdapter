@@ -103,6 +103,9 @@ public class CapellaClient {
 		if (elementTypes.contains("ClassImpl") || elementTypes.contains("LogicalComponentImpl")) {
 			return gson.fromJson(jsonObject, SysmlClass.class);
 		}
+		if (elementTypes.contains("ComponentExchangeImpl")) {
+			return gson.fromJson(jsonObject, Connector.class);
+		}
 		if (elementTypes.contains("GeneralizationImpl")) {
 			return gson.fromJson(jsonObject, Generalization.class);
 		}
@@ -223,10 +226,10 @@ public class CapellaClient {
 		return gson.fromJson(jsonObject.get("elements"), listType);
 	}
 	
-	public static List<PortUsage> getConnectors(String projectId, int page, int limit) {
+	public static List<Connector> getConnectors(String projectId, int page, int limit) {
 		String urlString = getApiCollectionUrl(API_URL_CONNECTOR_PATH, projectId, page, limit + 1);
 		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
+		java.lang.reflect.Type listType = new TypeToken<ArrayList<Connector>>() {
 		}.getType();
 		Gson gson = new Gson();
 		return gson.fromJson(jsonObject.get("elements"), listType);
