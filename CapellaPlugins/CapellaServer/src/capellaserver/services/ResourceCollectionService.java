@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.emf.ecore.EObject;
 import capellaserver.domain.Element;
-import capellaserver.services.mapping.Mapper;
+import capellaserver.mapping.Mapper;
 
 public class ResourceCollectionService extends BaseService {
 

@@ -46,7 +46,6 @@ public class ServerRunnable implements Runnable {
 			e.printStackTrace();
 		}
         try {
-			System.out.println("joining the server from end");
 			server.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();

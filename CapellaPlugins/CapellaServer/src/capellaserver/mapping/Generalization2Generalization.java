@@ -1,27 +1,26 @@
-package capellaserver.services.mapping;
+package capellaserver.mapping;
 
 import org.eclipse.emf.ecore.EObject;
+import org.polarsys.capella.core.data.capellacore.Generalization;
 import org.polarsys.capella.core.data.capellacore.NamedElement;
-import org.polarsys.capella.core.data.capellacore.Relationship;
-
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
-public class Relationship2Relationship extends AbstractMapping implements IMapping {
+public class Generalization2Generalization extends AbstractMapping implements IMapping {
 
-	public Relationship2Relationship() {
-		_source = Relationship.class;
-		_target = capellaserver.domain.Relationship.class;
+	public Generalization2Generalization() {
+		_source = Generalization.class;
+		_target = capellaserver.domain.Generalization.class;
 	}
 
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if(!(source instanceof Relationship)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Relationship";
+		if(!(source instanceof Generalization)) {
+			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Generalization";
 			throw new IllegalArgumentException(errorMessage);
 		}
-		Relationship capellaElement = (Relationship) source;
-		capellaserver.domain.Relationship target = new capellaserver.domain.Relationship();
+		Generalization capellaElement = (Generalization) source;
+		capellaserver.domain.Generalization target = new capellaserver.domain.Generalization();
 			
 			for(NamedElement feature : capellaElement.getFeatures()) {
 				target.addOwnedElement(new Link(createURI(linkBaseUrl + feature.getId())));
@@ -30,6 +29,8 @@ public class Relationship2Relationship extends AbstractMapping implements IMappi
 				target.addOwnedElement(new Link(createURI(linkBaseUrl + ownedPropVal.getId())));
 			}
 
+			target.setGeneral(new Link(createURI(linkBaseUrl + capellaElement.getSuper().getId())));
+			target.setSpecific(new Link(createURI(linkBaseUrl + capellaElement.getSub().getId())));
 			target.addRelatedElement(new Link(createURI(linkBaseUrl + capellaElement.getRealizedFlow())));
 			target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
 			target.setIdentifier(capellaElement.getId());

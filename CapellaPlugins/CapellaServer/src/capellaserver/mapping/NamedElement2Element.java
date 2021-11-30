@@ -1,4 +1,4 @@
-package capellaserver.services.mapping;
+package capellaserver.mapping;
 
 import java.util.Set;
 import java.util.stream.Collectors;

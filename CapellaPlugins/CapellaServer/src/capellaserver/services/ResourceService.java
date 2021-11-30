@@ -5,7 +5,7 @@ import org.eclipse.emf.ecore.EObject;
 import capellaapi.provider.CapellaEmfElementsProvider;
 import capellaapi.provider.ICapellaEmfElementsProvider;
 import capellaserver.domain.Element;
-import capellaserver.services.mapping.Mapper;
+import capellaserver.mapping.Mapper;
 
 public class ResourceService {
 
@@ -21,5 +21,4 @@ public class ResourceService {
 		return Mapper.map(capellaElement, _linkBaseUrl);
 	}
 
-	
 }

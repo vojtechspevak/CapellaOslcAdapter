@@ -1,4 +1,4 @@
-package capellaserver.services.mapping;
+package capellaserver.mapping;
 
 import java.net.URI;
 

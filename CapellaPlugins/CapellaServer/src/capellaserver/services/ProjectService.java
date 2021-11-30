@@ -9,7 +9,6 @@ import capellaapi.provider.ICapellaEmfElementsProvider;
 import capellaserver.domain.ProjectInfo;
 
 public class ProjectService {
-
 	
 	public List<ProjectInfo> getProjects() {
 		ICapellaEmfElementsProvider provider = new CapellaEmfElementsProvider();
@@ -18,7 +17,6 @@ public class ProjectService {
 				.stream()
 				.map((pn) -> {return new ProjectInfo(pn,encoder.encodeToString(pn.getBytes()));})
 				.collect(Collectors.toList());
-
 	}
 	
 }
