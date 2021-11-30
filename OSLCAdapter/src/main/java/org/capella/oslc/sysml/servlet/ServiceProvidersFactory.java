@@ -62,7 +62,7 @@ public class ServiceProvidersFactory
 {
     private static Class<?>[] RESOURCE_CLASSES =
     {
-        ServiceProviderService1.class, ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService6.class, ServiceProviderService7.class, ServiceProviderService8.class, ServiceProviderService9.class, ServiceProviderService10.class, ServiceProviderService11.class, ServiceProviderService12.class, ServiceProviderService13.class
+        ServiceProviderService2.class, ServiceProviderService3.class, ServiceProviderService4.class, ServiceProviderService5.class, ServiceProviderService9.class, ServiceProviderService12.class, ServiceProviderService13.class
     };
 
     private ServiceProvidersFactory()
