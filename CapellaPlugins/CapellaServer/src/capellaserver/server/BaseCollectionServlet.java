@@ -29,10 +29,10 @@ public abstract class BaseCollectionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String projectName = request.getParameter("projectName");
+		String projectName = ServletHelper.getAndDecodeBase64Parameter(request,"projectName");
 		String fullTextSearch = request.getParameter("fullTextSearch");
 		String linkBaseUrl = request.getParameter("linkBaseUrl");
-		String aqlQuery = request.getParameter("aqlQuery");
+		String aqlExpression = request.getParameter("aqlExpr");
 	
 		if (projectName == null) {
 			ServletHelper.setErrorResponse(response, "Project name needs to be provided");
@@ -47,7 +47,7 @@ public abstract class BaseCollectionServlet extends HttpServlet {
 			return;
 		}
 
-		List<Element> elements = collectionService.getElements(projectName,aqlQuery);
+		List<Element> elements = collectionService.getElements(projectName,aqlExpression);
 		ServletHelper.setOkResponse(response, elements, "elements");
 	}
 }

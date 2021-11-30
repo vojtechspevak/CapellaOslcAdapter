@@ -21,7 +21,7 @@ public class ResourceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     		 throws ServletException, IOException {
-    	String projectName = request.getParameter("projectName");
+    	String projectName =  ServletHelper.getAndDecodeBase64Parameter(request,"projectName");
 		String linkBaseUrl = request.getParameter("linkBaseUrl");
     	String elementId = request.getParameter("elementId");
     	if (projectName == null || elementId == null) {

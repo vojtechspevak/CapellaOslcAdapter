@@ -15,43 +15,50 @@ import org.eclipse.lyo.core.query.QueryUtils;
 import org.eclipse.lyo.core.query.SimpleTerm;
 import org.eclipse.lyo.core.query.Value;
 import org.eclipse.lyo.core.query.WhereClause;
+import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
+import org.oasis.oslcop.sysml.SysmlDomainConstants;
 
-public class WhereQueryParser {
+public class WhereQueryAqlTransformer {
 
     private static Map<String,String> map = new HashMap<String,String>();
-//    static {
-//        map.put(OslcConstants.DCTERMS_NAMESPACE_PREFIX, OslcConstants.DCTERMS_NAMESPACE);
-//    	map.put(OslcConstants.DCTERMS_NAMESPACE_PREFIX, OslcConstants.DCTERMS_NAMESPACE);
-//    	map.put(OslcConstants.OSLC_CORE_NAMESPACE_PREFIX, OslcConstants.OSLC_CORE_NAMESPACE);
-//    	map.put(OslcConstants.OSLC_DATA_NAMESPACE_PREFIX, OslcConstants.OSLC_DATA_NAMESPACE);
-//    	map.put(OslcConstants.RDF_NAMESPACE_PREFIX, OslcConstants.RDF_NAMESPACE);
-//    	map.put(OslcConstants.RDFS_NAMESPACE_PREFIX, OslcConstants.RDFS_NAMESPACE);
-//    	map.put(Oslc_amDomainConstants.ARCHITECTURE_MANAGEMENT_NAMSPACE_PREFIX,
-//    			Oslc_amDomainConstants.ARCHITECTURE_MANAGEMENT_NAMSPACE);
-//    	map.put(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE_PREFIX, DctermsDomainConstants.DUBLIN_CORE_NAMSPACE);
-//    	map.put(FoafDomainConstants.FOAF_NAMSPACE_PREFIX, FoafDomainConstants.FOAF_NAMSPACE);
-//    	map.put(OslcDomainConstants.OSLC_NAMSPACE_PREFIX, OslcDomainConstants.OSLC_NAMSPACE);
-//    	map.put(SysmlDomainConstants.SYSML_NAMSPACE_PREFIX, SysmlDomainConstants.SYSML_NAMSPACE);
-//    }
+    static 
+    {
+    	map.put(OslcConstants.DCTERMS_NAMESPACE_PREFIX, OslcConstants.DCTERMS_NAMESPACE);
+    	map.put(SysmlDomainConstants.SYSML_NAMSPACE_PREFIX, SysmlDomainConstants.SYSML_NAMSPACE);
+    }
 	
-	public static String parseQueryToAql(String where, String prefix) {
+    /**
+     * Transforms simple oslc.where query to Acceleo Query Language logical expression
+     * @param where oslc.where query to be parsed
+     * @param prefix oslc.prefix to be parsed
+     * @return aql expression
+	 * @throws WebApplicationException if query can not be parsed or contains any unsupported terms
+     */
+	public static String parseQueryToAqlExpression(String where, String prefix) {
 		try {
 			Map<String,String> prefixes = QueryUtils.parsePrefixes(prefix);
+			prefixes.putAll(map);
 			WhereClause wc = QueryUtils.parseWhere(where, prefixes);
 			List<SimpleTerm> terms = wc.children();
 			String aqlQuery = "e | ".concat(transformTermToAql(terms.get(0)));
 			for(int i=1; i< terms.size(); i++) {
-				aqlQuery
+				aqlQuery = aqlQuery
 					.concat(" and ")
 					.concat(transformTermToAql(terms.get(i)));
 			}
 			return aqlQuery;
 		} catch (ParseException e) {
-			Log.error(WhereQueryParser.class, "Could not parse query '" + where + "'.");
+			Log.error(WhereQueryAqlTransformer.class, "Could not parse query '" + where + "'.");
 			throw new WebApplicationException(e, Status.BAD_REQUEST);
 		}
 	}
 	
+	/**
+	 * Transforms single term to aql expression
+	 * @param term oslc.where term to be transformed
+	 * @return aql expression corresponding to the term
+	 * @throws WebApplicationException if term type is not supported
+	 */
 	private static String transformTermToAql(SimpleTerm term) {
 		switch(term.type()) {
 		case COMPARISON:
@@ -65,6 +72,11 @@ public class WhereQueryParser {
 		}
 	}
 	
+	/**
+	 * Transforms single in term to aql disjunctions wrapped in parentheses
+	 * @param inTerm oslc.where term to be transformed
+	 * @return aql expression corresponding to the term
+	 */
 	private static String transformInTermToAql(InTerm inTerm) {
 		String aqlTerm = "( ";
 		String transformedTermBase = "e."
@@ -84,6 +96,13 @@ public class WhereQueryParser {
 		return aqlTerm.concat(" )");
 	}
 
+	/**
+	 * Transforms single comparison term to aql expression
+	 * equals and not equals is supported
+	 * @param inTerm oslc.where term to be transformed
+	 * @return aql expression corresponding to the term
+	 * @throws WebApplicationException if term operator is not supported
+	 */
 	private static String transformComparisonTermToAql(ComparisonTerm comparisonTerm) {
 	    String operator;
 		switch (comparisonTerm.operator()) {
@@ -102,6 +121,12 @@ public class WhereQueryParser {
 				.concat(transformPropertyValueToAql(comparisonTerm.operand()));
 	}
 	
+	/**
+	 * Transforms property string value to aql string enclosed with single quotes
+	 * @param inTerm oslc.where term to be transformed
+	 * @return aql expression corresponding to the term
+	 * @throws WebApplicationException if value is not a string
+	 */
 	private static String transformPropertyValueToAql(Value value) {
 		switch(value.type()) {
 	    	case STRING:
@@ -113,15 +138,27 @@ public class WhereQueryParser {
 		}
 	}
 	
+	/**
+	 * helper method to get the id from uri ref
+	 * as the owner translates to the eContainer().id equality check
+	 * @param uriRef uri reference of the owner element 
+	 * @return id of the referenced element or empty string if the uri ref is not of known form
+	 */
 	private static String getIdFromUriRef(String uriRef) {
 		int index = uriRef.toString().indexOf("elements/");
 		if(index == -1) {
-			Log.warn(WhereQueryParser.class, "Unsupported oslc.where uri ref value: '" + uriRef + "'.");
+			Log.warn(WhereQueryAqlTransformer.class, "Unsupported oslc.where uri ref value: '" + uriRef + "'.");
 			return ""; 
 		}
 		return "'" + uriRef.substring(index + 9, uriRef.length() -1) + "'";
 	}
 	
+	/**
+	 * Transforms known name to corresponding Capella property name
+	 * @param propertyName sysml model property name 
+	 * @return corresponding property name in Capella model
+	 * @throws WebApplicationException if name does not match the defined names ("name","owner","identifier")
+	 */
 	private static String transformPropertyNameToAql(String propertyName) {
 		switch(propertyName){
         case "name":

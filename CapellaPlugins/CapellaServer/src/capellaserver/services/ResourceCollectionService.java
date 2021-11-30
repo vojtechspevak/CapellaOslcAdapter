@@ -21,10 +21,10 @@ public class ResourceCollectionService extends BaseService {
 		_linkBaseUrl = linkBaseUrl;
 	}
 
-	public List<Element> getElements(String projectName, String aqlQuery) {
-		List<EObject> elements = aqlQuery == null 
+	public List<Element> getElements(String projectName, String aqlExpression) {
+		List<EObject> elements = aqlExpression == null 
 				? _capellaElementsProvider.getProjectElementsByType(projectName, _sourceElementClasses)
-				: _capellaElementsProvider.getProjectElementsByTypeAndExpression(projectName, _sourceElementClasses, aqlQuery);
+				: _capellaElementsProvider.getProjectElementsByTypeAndExpression(projectName, _sourceElementClasses, aqlExpression);
 		elements = handlePaging(elements);
 		return Mapper.map(elements, _targetElementClass, _linkBaseUrl);
 	}

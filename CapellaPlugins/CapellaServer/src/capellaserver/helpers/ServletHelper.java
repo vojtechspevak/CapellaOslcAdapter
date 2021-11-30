@@ -104,14 +104,14 @@ public class ServletHelper {
 	 * @param request http request with Base64 encoded project name
 	 * @return decoded parameter or null if the parameter is not present in the request
 	 */
-//	public static String getAndDecodeParameter(HttpServletRequest request, String parameterName) {
-//		String encodedParameter = request.getParameter(parameterName);
-//		if(encodedParameter == null) {
-//			return null;
-//		}
-//		Base64.Decoder decoder = Base64.getUrlDecoder();
-//		return new String(decoder.decode(encodedParameter),StandardCharsets.UTF_8);
-//	}
+	public static String getAndDecodeBase64Parameter(HttpServletRequest request, String parameterName) {
+		String encodedParameter = request.getParameter(parameterName);
+		if(encodedParameter == null) {
+			return null;
+		}
+		Base64.Decoder decoder = Base64.getUrlDecoder();
+		return new String(decoder.decode(encodedParameter),StandardCharsets.UTF_8);
+	}
 
 	/**
 	 * retrieves and decodes parameter of given name that is encoded in URL safe form

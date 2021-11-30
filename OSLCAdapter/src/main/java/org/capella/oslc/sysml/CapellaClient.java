@@ -66,9 +66,9 @@ public class CapellaClient {
 		if(where == null){
 			return url;
 		}
-		String aqlQuery = WhereQueryParser.parseQueryToAql(where, prefix);
-		String encodedAqlQuery = encodeUrlText(aqlQuery);
-		return url + "&aqlQuery=" + encodedAqlQuery;
+		String aqlExpression = WhereQueryAqlTransformer.parseQueryToAqlExpression(where, prefix);
+		String encodedAqlExpression = encodeUrlText(aqlExpression);
+		return url + "&aqlExpr=" + encodedAqlExpression;
 	}
 
 	private static String encodeUrlText(String text) {
