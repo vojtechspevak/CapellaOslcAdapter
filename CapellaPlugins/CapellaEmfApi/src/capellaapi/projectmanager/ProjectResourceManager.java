@@ -78,10 +78,21 @@ public class ProjectResourceManager {
 			resource = Arrays
 					.asList(project.members())
 					.stream()
-					.filter(r -> r.getName().endsWith(ConstHelper.CAPELLA_EXTENSION_CURRENT)) // TODO check the version set this somewhere accordingly 
+					.filter(r -> r.getName().endsWith(ConstHelper.CAPELLA_EXTENSION_CURRENT)) 
 					.findFirst()
-					.get();
+					.orElse(null);
+
+			if (resource == null) {
+				// try to load the resource from the older capella versions
+				resource = Arrays
+						.asList(project.members())
+						.stream()
+						.filter(r -> r.getName().endsWith(ConstHelper.CAPELLA_EXTENSION_FORMER)) 
+						.findFirst()
+						.get();
+			}
 		
+			
 		} catch (CoreException | NoSuchElementException e) {
 			// TODO Error Handling
 			return null;

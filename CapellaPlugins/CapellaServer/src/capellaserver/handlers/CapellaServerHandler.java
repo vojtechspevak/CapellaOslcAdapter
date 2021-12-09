@@ -31,15 +31,15 @@ public class CapellaServerHandler extends AbstractHandler {
 
 	private Object showStartServerOption(ExecutionEvent event, IWorkbenchWindow window) throws ExecutionException {
 		  InputDialog dlg = new InputDialog(
-				  HandlerUtil.getActiveShellChecked(event), "Embedded Server",
-		  	      "Start a server on the specified port:", DEFAULT_PORT, new IInputValidator() 
+				  HandlerUtil.getActiveShellChecked(event), "Capella Server",
+		  	      "Start Capella Server on the specified port:", DEFAULT_PORT, new IInputValidator() 
 				    {
 				        @Override
 				        public String isValid(String newText) {
 				        	if(isInputTextValidPortNumber(newText)) {
 				        		return null;
 				        	} else {
-				        		return "Please insert valid port number.";
+				        		return "Please insert a valid port number.";
 				        	}
 				        }
 				    });
@@ -53,13 +53,13 @@ public class CapellaServerHandler extends AbstractHandler {
 		String message = "Server is running on port " + portNumber + ".";
 		MessageDialog.openInformation(
 				window.getShell(),
-				"Embedded Server",
+				"Capella Server",
 				message);
 		return null;
 	}
 
 	private Object showStopServerOption(ExecutionEvent event, IWorkbenchWindow window) {
-		if(! MessageDialog.openQuestion(window.getShell(), "Embedded Server", "Server is now running, do you want to stop it?")) {
+		if(! MessageDialog.openQuestion(window.getShell(), "Capella Server", "Server is now running, do you want to stop it?")) {
 			return null;
 		}
 		_serverThread.interrupt();

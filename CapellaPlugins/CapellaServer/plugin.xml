@@ -36,7 +36,7 @@
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
                id="CapellaServer.menus.sampleMenu"
-               label="Embedded Server"
+               label="Capella Server"
                mnemonic="M">
             <command
                   commandId="CapellaServer.commands.sampleCommand"

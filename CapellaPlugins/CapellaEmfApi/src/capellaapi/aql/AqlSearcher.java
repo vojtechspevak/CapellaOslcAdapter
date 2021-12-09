@@ -188,7 +188,7 @@ public class AqlSearcher {
 	 * @return AQL friendly type name of the class
 	 */
 	private static String getAqlTypeNameFromClass(Class clazz) {
-		String[] packagePathSplits = clazz.getPackageName().split("\\.");
+		String[] packagePathSplits = clazz.getPackage().getName().split("\\.");
 		String lastPackagePathPart = packagePathSplits[packagePathSplits.length - 1];
 		return lastPackagePathPart + "::" + clazz.getSimpleName();
 	}

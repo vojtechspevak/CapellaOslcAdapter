@@ -2,13 +2,20 @@ package capellaserver.mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 
 import capellaserver.domain.Element;
 
+/**
+ * This class holds all of the mappings and is intended 
+ * to be used statically in the code (i.e. Mapper.Map(...))
+ * The implemented mappings are to be registered below 
+ */
 public class Mapper {
 
 	private static final List<IMapping> _mappings;
@@ -29,6 +36,13 @@ public class Mapper {
 		_mappings.add(new ComponentPort2PortUsage());
 	}
 
+	/**
+	 * finds the best suitable target for a single object and maps it
+	 * @param source object to map
+	 * @param linkBaseUrl base URL to create links to from the mapped SysML element
+	 * @throws UnsupportedOperationException if mapping is not found
+	 * @return element mapped to the most specific type for a given source
+	 */
 	public static Element map(EObject source, String linkBaseUrl){
 		if(source == null) {
 			return null;
@@ -41,33 +55,34 @@ public class Mapper {
 		return mapping.map(source, linkBaseUrl);
 	}
 
-	public static List<Element> map(List<EObject> source, Class<?> targetClass, String linkBaseUrl){
+	/**
+	 * maps a collection of source EObjects to best suitable found target SysML Objects
+	 * if general source type was provided, it may happen, 
+	 * that the concrete types returned in the collection are not the same
+	 * @param source list of objects to map
+	 * @param linkBaseUrl base URL to create links to from the mapped SysML element
+	 * @throws UnsupportedOperationException if mapping is not found
+	 * @return list of elements, each mapped to the most specific type for a given source
+	 */
+	public static List<Element> map(List<EObject> source, String linkBaseUrl){
 		ArrayList<Element> result = new ArrayList<Element>(source.size());
 		if(source.size() == 0) {
 			return result;
 		}
-		
-		List<IMapping> targetMappings = _mappings
-				.stream()
-				.filter(m -> m.getTargetClass().equals(targetClass)).collect(Collectors.toList());
 
-		if (targetMappings.isEmpty()) {
-			throw new UnsupportedOperationException("Mapping not found.");
-		}
-
-		// this is done to avoid the type checking of each element if it is not necessary
-		if (targetMappings.size() == 1) {
-			return source.stream()
-					.map(s -> targetMappings.get(0).map(s, linkBaseUrl))
-					.collect(Collectors.toList());
-		}
-		
-		// if the reflection causes performance issues for large sets of resources, this can be rewritten to a form 
-		// where the found  Class -> IMapping pairs are cached and not computed repeatedly
+		// this is done, so the mapping is not searched for repeatedly, 
+		// it may be worth changing it to cache on a class level
+		Map<Class<?>,IMapping> cachedMappings = new HashMap<Class<?>,IMapping>();
 		for(EObject eObject : source) {
-			IMapping mapping = findMostSuitableMapping(eObject, targetMappings);
-			if(mapping == null) {
-				throw new UnsupportedOperationException("Mapping not found.");
+			IMapping mapping;
+			if(cachedMappings.containsKey(eObject.getClass())){
+				mapping = cachedMappings.get(eObject.getClass());
+			} else {
+				mapping = findMostSuitableMapping(eObject, _mappings);
+				if(mapping == null) {
+					throw new UnsupportedOperationException("Mapping not found.");
+				}
+				cachedMappings.put(eObject.getClass(), mapping);
 			}
 			result.add(mapping.map(eObject, linkBaseUrl));
 		}
@@ -95,6 +110,12 @@ public class Mapper {
 		return null;
 	}
 
+	/**
+	 * this method is used to obtain all classes that maps 
+	 * to the specified target in the registered mappings
+	 * @param targetElementClass
+	 * @return List of source classes that are mapped to the specified target
+	 */
 	public static List<Class<?>> getSourceClassesForTargetClass(Class<?> targetElementClass) {
 		return _mappings
 				.stream()
