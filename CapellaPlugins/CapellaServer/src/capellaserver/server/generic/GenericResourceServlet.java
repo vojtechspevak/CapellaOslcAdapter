@@ -1,4 +1,4 @@
-package capellaserver.server;
+package capellaserver.server.generic;
 
 import java.io.IOException;
 
@@ -11,8 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.google.gson.JsonObject;
 
-import capellaserver.helpers.EObjectSerializer;
-import capellaserver.helpers.ServletHelper;
+import capellaserver.server.ServletHelper;
 import capellaserver.services.GenericResourceService;
 
 public class GenericResourceServlet extends HttpServlet {
@@ -20,6 +19,8 @@ public class GenericResourceServlet extends HttpServlet {
     private static final long serialVersionUID = 11L;
 
     /**
+     * The generic servelts and related functionality is present to show how the eObject can e serialized using its reflective API
+     * the resources are not mapped from the Capella representation ad the client can choose how to handle them itself
      * This servlet is used to find element by id
      */
     @Override

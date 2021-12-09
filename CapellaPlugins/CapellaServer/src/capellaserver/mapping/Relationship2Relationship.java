@@ -7,7 +7,7 @@ import org.polarsys.capella.core.data.capellacore.Relationship;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
-public class Relationship2Relationship extends AbstractMapping implements IMapping {
+public class Relationship2Relationship extends AbstractMapping {
 
 	public Relationship2Relationship() {
 		_source = Relationship.class;
@@ -16,10 +16,7 @@ public class Relationship2Relationship extends AbstractMapping implements IMappi
 
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if(!(source instanceof Relationship)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Relationship";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		Relationship capellaElement = (Relationship) source;
 		capellaserver.domain.Relationship target = new capellaserver.domain.Relationship();
 			

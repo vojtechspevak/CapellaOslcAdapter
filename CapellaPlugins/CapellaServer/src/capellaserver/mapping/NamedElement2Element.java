@@ -10,7 +10,7 @@ import org.polarsys.capella.core.data.capellacore.NamedElement;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
-public class NamedElement2Element extends AbstractMapping implements IMapping {
+public class NamedElement2Element extends AbstractMapping {
 
 	public NamedElement2Element() {
 		_source = NamedElement.class;
@@ -19,10 +19,7 @@ public class NamedElement2Element extends AbstractMapping implements IMapping {
 
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if (!(source instanceof NamedElement)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Element";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		NamedElement capellaElement = (NamedElement) source;
 		Element target = new Element();
 		Set<Link> contentsSet = source.eContents().stream().filter(e -> (e instanceof CapellaElement)) // ModelElement

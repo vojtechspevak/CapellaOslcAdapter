@@ -1,8 +1,6 @@
-package capellaserver.helpers;
+package capellaserver.server;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -10,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
  * Class providing reusable methods for servlets 
@@ -75,30 +71,6 @@ public class ServletHelper {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	
-//	public static String parseLinkBaseUrl(HttpServletRequest request) {
-//		String linkBaseUrlEncoded = request.getParameter("linkBaseUrl");
-//		if(linkBaseUrlEncoded == null) {
-//			return "http://baseurl"; // TODO some sensible error handling?
-//		}
-//		Base64.Decoder decoder = Base64.getDecoder();
-//		return new String(decoder.decode(linkBaseUrlEncoded));
-//	}
-//
-//	/**
-//	 * retrieves and decodes project name from request parameter
-//	 * @param request http request with encoded project name
-//	 * @return project name in original form or null if the projectName parameter is not provided
-//	 */
-//	public static String getAndDecodeProjectName(HttpServletRequest request) {
-//		String projectNameEncoded = request.getParameter("projectName");
-//		if(projectNameEncoded == null) {
-//			return null; // TODO some sensible error handling?
-//		}
-//		Base64.Decoder decoder = Base64.getDecoder();
-//		return new String(decoder.decode(projectNameEncoded));
-//	}
-
 	/**
 	 * retrieves and decodes Base64 encoded parameter of given name from request
 	 * @param request http request with Base64 encoded project name
@@ -112,20 +84,5 @@ public class ServletHelper {
 		Base64.Decoder decoder = Base64.getUrlDecoder();
 		return new String(decoder.decode(encodedParameter),StandardCharsets.UTF_8);
 	}
-
-	/**
-	 * retrieves and decodes parameter of given name that is encoded in URL safe form
-	 * or returns null if the request object does not contain such parameter
-	 * @param request http request with Base64 encoded project name
-	 * @return decoded parameter or null if the parameter is not present in the request
-	 */
-//	public static String getAndDecodeParameter(HttpServletRequest request, String parameterName) {
-//		String encodedParameter = request.getParameter(parameterName);
-//		if(encodedParameter == null) {
-//			return null;
-//		}
-//		return URLDecoder.decode(encodedParameter, StandardCharsets.UTF_8);
-//	}
-
 	
 }

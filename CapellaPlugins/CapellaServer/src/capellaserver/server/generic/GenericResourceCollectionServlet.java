@@ -1,4 +1,4 @@
-package capellaserver.server;
+package capellaserver.server.generic;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,8 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.google.gson.JsonObject;
 
-import capellaserver.helpers.EObjectSerializer;
-import capellaserver.helpers.ServletHelper;
+import capellaserver.server.ServletHelper;
 import capellaserver.services.GenericResourceService;
 
 public class GenericResourceCollectionServlet extends HttpServlet {
@@ -22,7 +21,9 @@ public class GenericResourceCollectionServlet extends HttpServlet {
     private static final String DEFAULT_TYPE = "capellacore::NamedElement";
 
     /**
-     * This servlet provides generic access to resources and enables filtering based on various criteria
+     * The generic servelts and related functionality is present to show how the eObject can e serialized using its reflective API
+     * the resources are not mapped from the Capella representation ad the client can choose how to handle them itself
+     * This servlet is used for handling collection requests
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,7 +45,7 @@ public class GenericResourceCollectionServlet extends HttpServlet {
 
 		if (fullTextSearch != null) {
 			List<EObject> foundElements = resourceService.getElementsByFullTextSearch(projectName, fullTextSearch, type);
-			JsonObject foundElementsJson = new JsonObject(); // TODO move the serialization to servlet helper?
+			JsonObject foundElementsJson = new JsonObject();
 			foundElementsJson.add("elements", EObjectSerializer.serializeEObjectCollection(foundElements));
 			response.getWriter().println(foundElementsJson.toString());
 			ServletHelper.setOkResponse(response);

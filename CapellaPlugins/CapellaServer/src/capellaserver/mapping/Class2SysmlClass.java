@@ -1,9 +1,6 @@
 package capellaserver.mapping;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.polarsys.capella.common.data.modellingcore.AbstractConstraint;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 
@@ -20,13 +17,7 @@ public class Class2SysmlClass extends AbstractMapping {
 
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-//		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-//				"cz.vutbr.fit.group.verifit.ete.core");
-//		store.
-		if(!(source instanceof org.polarsys.capella.core.data.information.Class)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type SysmlClass";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		org.polarsys.capella.core.data.information.Class capellaElement = 
 				(org.polarsys.capella.core.data.information.Class) source;
 		SysmlClass target = new SysmlClass();

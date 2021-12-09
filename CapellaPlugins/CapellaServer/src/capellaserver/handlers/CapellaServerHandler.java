@@ -18,6 +18,9 @@ public class CapellaServerHandler extends AbstractHandler {
 	private static Thread _serverThread;
 	private static final String DEFAULT_PORT = "3333";
 	
+	/**
+	 * function handling the ui event
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
@@ -28,7 +31,13 @@ public class CapellaServerHandler extends AbstractHandler {
 		}
 	}
 	
-
+	/**
+	 * functionality for asking user whether the server should be started
+	 * if so, server is started in separate thread 
+	 * @param event
+	 * @param window
+	 * @throws ExecutionException 
+	 */
 	private Object showStartServerOption(ExecutionEvent event, IWorkbenchWindow window) throws ExecutionException {
 		  InputDialog dlg = new InputDialog(
 				  HandlerUtil.getActiveShellChecked(event), "Capella Server",
@@ -58,6 +67,12 @@ public class CapellaServerHandler extends AbstractHandler {
 		return null;
 	}
 
+	/**
+	 * functionality for asking user whether the server should be stoped
+	 * if so, the running server is stopped
+	 * @param window
+	 * @return
+	 */
 	private Object showStopServerOption(ExecutionEvent event, IWorkbenchWindow window) {
 		if(! MessageDialog.openQuestion(window.getShell(), "Capella Server", "Server is now running, do you want to stop it?")) {
 			return null;
@@ -72,7 +87,7 @@ public class CapellaServerHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Validator for the port number input for Embedded jetty
+	 * Validation for the port number input for Embedded jetty
 	 * @param text the port number as String
 	 * @return true if the text input represents valid port number, false otherwise
 	 */

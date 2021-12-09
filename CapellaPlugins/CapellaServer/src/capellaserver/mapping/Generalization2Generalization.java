@@ -6,7 +6,7 @@ import org.polarsys.capella.core.data.capellacore.NamedElement;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
-public class Generalization2Generalization extends AbstractMapping implements IMapping {
+public class Generalization2Generalization extends AbstractMapping {
 
 	public Generalization2Generalization() {
 		_source = Generalization.class;
@@ -15,10 +15,7 @@ public class Generalization2Generalization extends AbstractMapping implements IM
 
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if(!(source instanceof Generalization)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type Generalization";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		Generalization capellaElement = (Generalization) source;
 		capellaserver.domain.Generalization target = new capellaserver.domain.Generalization();
 			

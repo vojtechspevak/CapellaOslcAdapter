@@ -9,7 +9,7 @@ import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 import capellaserver.domain.PortUsage;
 
-public class ComponentPort2PortUsage extends AbstractMapping implements IMapping {
+public class ComponentPort2PortUsage extends AbstractMapping {
 
 	public ComponentPort2PortUsage() {
 		_source = ComponentPort.class;

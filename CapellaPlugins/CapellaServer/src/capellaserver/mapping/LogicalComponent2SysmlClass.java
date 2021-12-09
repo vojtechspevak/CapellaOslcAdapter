@@ -8,7 +8,7 @@ import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 import capellaserver.domain.SysmlClass;
 
-public class LogicalComponent2SysmlClass extends AbstractMapping implements IMapping {
+public class LogicalComponent2SysmlClass extends AbstractMapping {
 
 	public LogicalComponent2SysmlClass() {
 		_source = LogicalComponent.class;
@@ -17,10 +17,7 @@ public class LogicalComponent2SysmlClass extends AbstractMapping implements IMap
 	
 	@Override
 	public Element map(EObject source, String linkBaseUrl) {
-		if(!(source instanceof LogicalComponent)) {
-			String errorMessage = "Cannot map argument of type " + source.getClass().getName() + " to type LogicalComponent";
-			throw new IllegalArgumentException(errorMessage);
-		}
+		checkIfSourceHasCorrectType(source);
 		LogicalComponent capellaElement = (LogicalComponent) source;
 		SysmlClass target = new SysmlClass();
 		for(CapellaElement gen : capellaElement.getOwnedGeneralizations()) {
@@ -36,13 +33,6 @@ public class LogicalComponent2SysmlClass extends AbstractMapping implements IMap
 			target.addOwnedMember(new Link(createURI(linkBaseUrl + component.getId())));
 		}
 		
-//		for(CapellaElement component : capellaElement.getOwnedli()) {
-//			target.addOwnedMember(new Link(createURI(linkBaseUrl + component.getId())));
-//		}
-
-		
-//		target.addOwnedRelationship(ownedRelationship);
-//		capellaElement.get
 		for(CapellaElement exchange : capellaElement.getOwnedComponentExchanges()) {
 			target.addOwnedRelationship(new Link(createURI(linkBaseUrl + exchange.getId())));
 		}

@@ -10,7 +10,7 @@ import capellaserver.domain.Connector;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
-public class ComponentExchange2Connector extends AbstractMapping implements IMapping {
+public class ComponentExchange2Connector extends AbstractMapping {
 
 	public ComponentExchange2Connector() {
 		_source = ComponentExchange.class;

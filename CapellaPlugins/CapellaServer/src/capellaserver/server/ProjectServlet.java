@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import capellaserver.domain.ProjectInfo;
-import capellaserver.helpers.ServletHelper;
 import capellaserver.services.ProjectService;
 
 public class ProjectServlet extends HttpServlet {

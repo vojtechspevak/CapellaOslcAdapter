@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.emf.ecore.EObject;
 
+/**
+ * This class contains functionality for retrieving the data from the CapellaEmfApi
+ * and is used by the generic servlets without mapping the elements to the SysML domain
+ */
 public class GenericResourceService extends BaseService {
 
 	public GenericResourceService(HttpServletRequest request) {

@@ -9,6 +9,9 @@ import org.eclipse.emf.ecore.EObject;
 import capellaapi.provider.CapellaEmfElementsProvider;
 import capellaapi.provider.ICapellaEmfElementsProvider;
 
+/**
+ * Base class for services handling collection 
+ */
 public class BaseService {
 
 	protected ICapellaEmfElementsProvider _capellaElementsProvider = new CapellaEmfElementsProvider();
@@ -18,6 +21,12 @@ public class BaseService {
 		_request = request;
 	}
 	
+	/**
+	 * tries to parse the pagination values from the request 
+	 * and process the query result accordingly
+	 * @param elements unpaged list of elements
+	 * @return paged list of elements according to the request
+	 */
 	protected List<EObject> handlePaging(List<EObject> elements){
 		try {
 			int page = Integer.parseInt(_request.getParameter("page"));

@@ -9,6 +9,11 @@ import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
+/**
+ * Provides the reusable functionality for implemented mappings
+ * New mapping should be derived from this class, specify its _target and _source
+ * and provide the map method. Then it can be registered in the Mapper class.
+ */
 public abstract class AbstractMapping implements IMapping {
 	protected Class<?> _source;
 	protected Class<?> _target;
@@ -23,16 +28,11 @@ public abstract class AbstractMapping implements IMapping {
 		return _target;
 	}
 
-	@Override
-	public String getSourceClassName() {
-		return _source.getSimpleName();
-	}
-
-	@Override
-	public String getTargetClassName() {
-		return _target.getSimpleName();
-	}
-
+	/**
+	 * helper method for the URI creation
+	 * @param uriString string to create the URI from
+	 * @return created URI
+	 */
 	protected static URI createURI(String uriString) {
 		try {
 			return new URI(uriString);
@@ -41,6 +41,11 @@ public abstract class AbstractMapping implements IMapping {
 		}
 	}
 
+	/**
+	 * helper method for adding the types of the original Capella element 
+	 * @param target target of the map
+	 * @param capellaElementClass class of the Capella source
+	 */
 	protected static void addAllCapellaTypes(Element target, Class<?> capellaElementClass) {
 		target.addType(capellaElementClass.getSimpleName());
 		capellaElementClass = capellaElementClass.getSuperclass();
@@ -50,6 +55,11 @@ public abstract class AbstractMapping implements IMapping {
 		}
 	}
 
+	/**
+	 * helper method for adding the soruces eContainer as owner to the target 
+	 * @param target target of the map
+	 * @param linkBaseUrl URL passed from the server
+	 */
 	protected static void setOwnerIfPresent(EObject source, Element target, String linkBaseUrl) {
 		if (source.eContainer() != null && source.eContainer() instanceof CapellaElement) {
 			Link ownerLink = new Link(createURI(linkBaseUrl + ((CapellaElement) source.eContainer()).getId()));

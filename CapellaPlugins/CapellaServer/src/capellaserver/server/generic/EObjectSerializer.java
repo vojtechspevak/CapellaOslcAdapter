@@ -1,4 +1,4 @@
-package capellaserver.helpers;
+package capellaserver.server.generic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +12,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+/**
+ * Class holding the functionality for generic serialization of EObjects 
+ */
 public class EObjectSerializer {
 	
-	public static JsonArray serializeEObjectCollection(List<EObject> eObjects) {
-		JsonArray resultArray = new JsonArray(eObjects.size());
-		for(EObject eObject : eObjects){
-			resultArray.add(serializeEObject(eObject));
-		}
-		return resultArray;
-	}
-
+	/**
+	 * Serializes a single eObject using the reflective API
+	 * references are replaced with a simple object containing only id
+	 * or not added at all if the reference object does not have id. 
+	 * @param eObject object to be serialized
+	 * @return object serialized to json
+	 */
 	public static JsonObject serializeEObject(EObject eObject) {
 		Gson gson = new Gson();
 		JsonObject json = new JsonObject();
@@ -33,9 +35,10 @@ public class EObjectSerializer {
 		}
 		
 		for (EStructuralFeature structuralFeature : eObject.eClass().getEAllStructuralFeatures()) {
-			if (structuralFeature.isDerived()) { // TODO should skip the properties that are computed from others (could be useful)?
-				continue;
-			}
+			// if desired, properties computed from others can be skipped by uncommenting the following code 
+			//if (structuralFeature.isDerived()) {
+			//	continue;
+			//}
 			if (structuralFeature.isMany()) {
 				serializeCollection(gson, structuralFeature, json, eObject);
 			} else {
@@ -45,12 +48,40 @@ public class EObjectSerializer {
 
 		return json;
 	}
+	
+	/**
+	 * method for List serialization using the serializeEObject method 
+	 * @param eObjects list to be serialized
+	 * @return jsonArray representation of the list 
+	 */
+	public static JsonArray serializeEObjectCollection(List<EObject> eObjects) {
+		JsonArray resultArray = new JsonArray(eObjects.size());
+		for(EObject eObject : eObjects){
+			resultArray.add(serializeEObject(eObject));
+		}
+		return resultArray;
+	}
 
+	/**
+	 * method for serializing all object types into json
+	 * @param eObject object for which the types should be serialized
+	 * @return jsonArray with the types
+	 */
 	public static JsonArray serializeObjectTypes(EObject eObject) {
 		Gson gson = new Gson();
 		return gson.toJsonTree(getAllObjectTypes(eObject.getClass())).getAsJsonArray();
 	}
 	
+	/**
+	 * helper method for serializing a single property
+	 * if property is a reference to another eObject with attribute id, 
+	 * it is replaced with simple object that only contains attribute id 
+	 * to be traceable from the response  
+	 * @param gson object used for the serialization
+	 * @param structuralFeature feature that is being srialized 
+	 * @param json resulting json
+	 * @param eObject serialized object
+	 */
 	private static void serializeProperty(Gson gson, EStructuralFeature structuralFeature, JsonObject json,
 			EObject eObject) {
 		Object property = eObject.eGet(structuralFeature);
@@ -79,11 +110,18 @@ public class EObjectSerializer {
 		}
 	}
 
+	/**
+	 * helper method for serializing collection of properties
+	 * @param gson object used for the serialization
+	 * @param structuralFeature feature that is being serialized 
+	 * @param json resulting json
+	 * @param eObject serialized object
+	 */
 	private static void serializeCollection(Gson gson, EStructuralFeature structuralFeature, JsonObject json,
 			EObject eObject) {
 		EList<Object> list = (EList<Object>) eObject.eGet(structuralFeature);
 
-		if (list.isEmpty()) { // TODO maybe check if it is required?
+		if (list.isEmpty()) {
 			return;
 		}
 

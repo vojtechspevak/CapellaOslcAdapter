@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import capellaserver.domain.Element;
-import capellaserver.helpers.ServletHelper;
 import capellaserver.services.ResourceService;
 
 public class ResourceServlet extends HttpServlet {
@@ -30,6 +29,10 @@ public class ResourceServlet extends HttpServlet {
     	}
     	ResourceService resourceService = new ResourceService(linkBaseUrl);
     	Element sysmlElement = resourceService.getResourceById(projectName, elementId);
+    	if(sysmlElement == null) {
+    		ServletHelper.setErrorResponse(response, "Specified element does not exist");
+    		return;
+    	}
     	ServletHelper.setOkResponse(response, sysmlElement);
     }
 

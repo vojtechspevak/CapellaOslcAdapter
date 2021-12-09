@@ -3,6 +3,12 @@ package capellaserver.server;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
 
+import capellaserver.server.generic.GenericResourceCollectionServlet;
+import capellaserver.server.generic.GenericResourceServlet;
+
+/**
+ * class to be used to start the server in a separate thread so, the UI one is not blocekd
+ */
 public class ServerRunnable implements Runnable {
     private int _port;
     public ServerRunnable(int port) {
@@ -13,6 +19,11 @@ public class ServerRunnable implements Runnable {
   	  runServer(_port);
     }
     
+    /**
+     * method for starting the server that initializes all the servlets
+     * once started, interrupt signalis awaited to stop the server
+     * @param port number that specifies the port for starting the server
+     */
 	public void runServer(int port){
         Server server = new Server(port);
         ServletHandler handler = new ServletHandler();
