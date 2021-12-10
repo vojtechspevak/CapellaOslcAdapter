@@ -14,25 +14,24 @@ import com.google.gson.JsonObject;
 import capellaserver.server.ServletHelper;
 import capellaserver.services.GenericResourceService;
 
+/**
+ * The generic servelts and related functionality is present to show how the eObject can e serialized using its reflective API
+ * the resources are not mapped from the Capella representation ad the client can choose how to handle them itself
+ * This servlet is used to find element by id
+ */
 public class GenericResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 11L;
 
-    /**
-     * The generic servelts and related functionality is present to show how the eObject can e serialized using its reflective API
-     * the resources are not mapped from the Capella representation ad the client can choose how to handle them itself
-     * This servlet is used to find element by id
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     		 throws ServletException, IOException {
 
-
-    	String projectName = request.getParameter("projectName");
+    	String projectName = ServletHelper.getAndDecodeBase64Parameter(request, "projectId");
     	String elementId = request.getParameter("elementId");
     	boolean includeTypes = Boolean.parseBoolean(request.getParameter("includeTypes"));
     	if (projectName == null || elementId == null) {
-			ServletHelper.setErrorResponse(response, "Project name and elementId needs to be provided");
+			ServletHelper.setErrorResponse(response, "Project id and element id needs to be provided");
     		return;
     	}
 

@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import capellaserver.domain.Element;
 import capellaserver.services.ResourceService;
 
+/**
+ * Servlet used to find Capella element by id and return it mapped to its most suitable SysML counterpart
+ */
 public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2L;
 
-    /**
-     * This servlet is used to find element by id and return it mapped to its most suitable sysml counterpart
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     		 throws ServletException, IOException {

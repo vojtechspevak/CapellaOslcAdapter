@@ -1,5 +1,8 @@
 package capellaapi.helpers;
 
+/**
+ * This class gathers globally accessible project constants
+ */
 public class ConstHelper {
 	public static final String CAPELLA_NATURE = "org.polarsys.capella.project.nature";
 	public static final String CAPELLA_EXTENSION_CURRENT = ".capella";

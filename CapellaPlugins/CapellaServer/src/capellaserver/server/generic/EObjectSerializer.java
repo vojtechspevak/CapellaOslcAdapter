@@ -72,6 +72,37 @@ public class EObjectSerializer {
 		return gson.toJsonTree(getAllObjectTypes(eObject.getClass())).getAsJsonArray();
 	}
 	
+	
+	/**
+	 * Class used for serialization of the reference objects
+	 */
+	static class IdentifiableReferenceObject {
+
+		private String id;
+
+		public IdentifiableReferenceObject(String id) {
+			this.id = id;
+		}
+
+		public String getId() {
+			return id;
+		}
+	}
+
+	/**
+	 * returns list of object types and super-types simple names
+	 * @param clazz Class to get types of
+	 * @return list of strings retrieved as class.getSimpleName() from clazz and its super classes
+	 */
+	private static List<String> getAllObjectTypes(Class<?> clazz) {
+		List<String> classNameList = new ArrayList<String>();
+		while (clazz != null) {
+			classNameList.add(clazz.getSimpleName());
+			clazz = clazz.getSuperclass();
+		}
+		return classNameList;
+	}
+	
 	/**
 	 * helper method for serializing a single property
 	 * if property is a reference to another eObject with attribute id, 
@@ -129,6 +160,7 @@ public class EObjectSerializer {
 			serializeValueTypeCollection(gson, list, json, structuralFeature);
 			return;
 		}
+		
 		EList<EObject> eObjectList = (EList) list;
 
 		final EStructuralFeature idFeature = getIdStructuralFeature(eObjectList.get(0));
@@ -194,36 +226,6 @@ public class EObjectSerializer {
 			return null;
 		}
 		return  new IdentifiableReferenceObject((String) eObject.eGet(idFeature));
-	}
-	
-	/**
-	 * Class used for serialization of the reference objects
-	 */
-	static class IdentifiableReferenceObject {
-
-		private String id;
-
-		public IdentifiableReferenceObject(String id) {
-			this.id = id;
-		}
-
-		public String getId() {
-			return id;
-		}
-	}
-
-	/**
-	 * returns list of object types and super-types simple names
-	 * @param clazz Class to get types of
-	 * @return list of strings retrieved as class.getSimpleName() from clazz and its super classes
-	 */
-	private static List<String> getAllObjectTypes(Class clazz) {
-		List<String> classNameList = new ArrayList<String>();
-		while (clazz != null) {
-			classNameList.add(clazz.getSimpleName());
-			clazz = clazz.getSuperclass();
-		}
-		return classNameList;
 	}
 	
 }

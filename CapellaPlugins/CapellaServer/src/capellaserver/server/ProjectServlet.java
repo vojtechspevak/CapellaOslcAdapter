@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import capellaserver.domain.ProjectInfo;
 import capellaserver.services.ProjectService;
 
+/**
+ * Servlet providing the information about what projects are opened in Capella 
+ */
 public class ProjectServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;

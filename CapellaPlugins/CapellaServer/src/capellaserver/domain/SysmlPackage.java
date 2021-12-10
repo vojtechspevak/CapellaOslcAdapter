@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.polarsys.capella.core.data.la.LogicalComponentPkg;
-
 public class SysmlPackage extends Namespace {
 	private Set<Link> filterCondition = new HashSet<Link>();
 
@@ -20,7 +18,6 @@ public class SysmlPackage extends Namespace {
 	}	
 
 	public String toString() {
-		LogicalComponentPkg pkg;
 		return toString(false);
 	}
 

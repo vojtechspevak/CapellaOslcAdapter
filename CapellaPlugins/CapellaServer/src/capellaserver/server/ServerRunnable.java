@@ -7,7 +7,7 @@ import capellaserver.server.generic.GenericResourceCollectionServlet;
 import capellaserver.server.generic.GenericResourceServlet;
 
 /**
- * class to be used to start the server in a separate thread so, the UI one is not blocekd
+ * class to be used to start the server in a separate thread so, the UI one is not blocked
  */
 public class ServerRunnable implements Runnable {
     private int _port;
@@ -21,7 +21,7 @@ public class ServerRunnable implements Runnable {
     
     /**
      * method for starting the server that initializes all the servlets
-     * once started, interrupt signalis awaited to stop the server
+     * once started, interrupt signal is awaited to stop the server
      * @param port number that specifies the port for starting the server
      */
 	public void runServer(int port){

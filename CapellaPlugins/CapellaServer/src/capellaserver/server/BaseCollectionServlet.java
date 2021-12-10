@@ -22,7 +22,7 @@ public abstract class BaseCollectionServlet extends HttpServlet {
 	protected final Class<?> _targetClass;
 	
 	/**
-	 * This constructor enforces to set the _targetClass property in the derived Class 
+	 * This constructor enforces the _targetClass property to be set in the derived Class 
 	 * @param targetClass
 	 */
 	public BaseCollectionServlet(Class<?> targetClass) {

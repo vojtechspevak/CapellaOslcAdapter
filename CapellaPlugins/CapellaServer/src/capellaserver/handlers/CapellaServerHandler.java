@@ -19,7 +19,7 @@ public class CapellaServerHandler extends AbstractHandler {
 	private static final String DEFAULT_PORT = "3333";
 	
 	/**
-	 * function handling the ui event
+	 * function handling the UI event
 	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

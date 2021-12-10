@@ -18,7 +18,6 @@ import org.polarsys.capella.common.data.behavior.BehaviorPackage;
 import org.polarsys.capella.common.data.modellingcore.ModellingcorePackage;
 import org.polarsys.capella.core.data.capellacommon.CapellacommonPackage;
 import org.polarsys.capella.core.data.capellacore.CapellacorePackage;
-import org.polarsys.capella.core.data.capellacore.NamedElement;
 import org.polarsys.capella.core.data.capellamodeller.CapellamodellerPackage;
 import org.polarsys.capella.core.data.cs.CsPackage;
 import org.polarsys.capella.core.data.ctx.CtxPackage;
@@ -40,11 +39,16 @@ import com.google.common.collect.Maps;
 
 import capellaapi.helpers.EmfHelper;
 
-
+/**
+ * AqlSearcher is responsible for executing the AQL queries
+ */
 public class AqlSearcher {
 	
 	private IQueryEnvironment _queryEnvironment;
 	
+	/**
+	 * Constructor which registers necessary classes to the query environment
+	 */
 	public AqlSearcher() {
 		_queryEnvironment = Query.newEnvironmentWithDefaultServices(null);
 		_queryEnvironment.registerEPackage(EcorePackage.eINSTANCE);
@@ -71,16 +75,27 @@ public class AqlSearcher {
 		_queryEnvironment.registerEPackage(ActivityPackage.eINSTANCE);
 	}
 	
+	/**
+	 * method for returning all project elements
+	 * @param searchRoot EObject to start the search from
+	 * @return all project EMF resources
+	 */
 	public List<EObject> getAllProjectElements(EObject searchRoot) {
-		String query = AqlQueryString.AllContentsQuery();
+		String query = AqlQueryString.allContentsQuery();
 		Object result = search(searchRoot, query);
 		List<EObject> resultList = (List<EObject>) result;
-		resultList.add(searchRoot);
+		resultList.add(0,searchRoot);
 		return resultList;
 	}
 
+	/**
+	 * gets single element by id
+	 * @param searchRoot EObject to start the search from
+	 * @param elementId identifier of the searched element
+	 * @return found resource or null
+	 */
 	public EObject getElementById(EObject searchRoot, String elementId) {
-		String query = AqlQueryString.FindByIdQuery(elementId);
+		String query = AqlQueryString.findByIdQuery(elementId);
 		Object result = search(searchRoot, query);
 		if(result == null &&  elementId.equals(EmfHelper.getRawEObjectProperty(searchRoot, "id"))) {
 			return searchRoot;
@@ -88,88 +103,78 @@ public class AqlSearcher {
 		return (EObject) result;
 	}
 
-	public List<EObject> getProjectElementsByType(EObject searchRoot, Class clazz) {
-		String typeString = getAqlTypeNameFromClass(clazz);
-		return getProjectElementsByType(searchRoot, typeString);
-	}
-
-	public List<EObject> getProjectElementsByType(EObject searchRoot, Collection<Class<?>> classes) {
+	/**
+	 * searches for project elements according to their type and additional AQL expression
+	 * if the expression is null, only type is checked 
+	 * @param searchRoot EObject to start the search from
+	 * @param classes types to be filtered
+	 * @param additionalExpression AQL boolean expression that elements have to satisfy
+	 * @return found elements
+	 */
+	public List<EObject> getProjectElementsByTypeAndExpression(EObject searchRoot, Collection<Class<?>> classes, String additionalExpression) {
 		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
-		return getProjectElementsByType(searchRoot, typeStrings);
-	}
-
-	public List<EObject> getProjectElementsByType(EObject searchRoot, Collection<Class<?>> classes, String additionalExpression) {
-		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
-		return getProjectElementsByType(searchRoot, typeStrings,additionalExpression);
-	}
-
-	
-	private List<EObject> getProjectElementsByType(EObject searchRoot, List<String> typeStrings,
-			String additionalExpression) {
-		String query = AqlQueryString.FindByTypeQuery(typeStrings);
+		String query = AqlQueryString.findByTypeQuery(typeStrings);
 		query = AqlQueryString.appendExpression(query,additionalExpression);
+		Object result = search(searchRoot, query);
+		Object isRootOfSearchedType = search(searchRoot, AqlQueryString.shouldIncludeRootInSearchResult(typeStrings, additionalExpression));
+		List<EObject> resultList = (List<EObject>) result;
+		if(Boolean.TRUE.equals(isRootOfSearchedType)) {
+			resultList.add(0,searchRoot);
+		};
+		return resultList;
+	}
+
+	/**
+	 * searches for project elements according to their type
+	 * it is equivalent to getProjectElementsByType(searchRoot,classes,null)
+	 * @param searchRoot EObject to start the search from
+	 * @param classes types to be filtered
+	 * @return found elements
+	 * @see getProjectElementsByTypeAndExpression(EObject searchRoot, Collection<Class<?>> classes, String additionalExpression)
+	 */
+	public List<EObject> getProjectElementsByType(EObject searchRoot, Collection<Class<?>> classes) {
+		return getProjectElementsByTypeAndExpression(searchRoot, classes, null);
+	}
+
+	/**
+	 * searches for project elements based on their types and fulltext search term 
+	 * @param searchRoot EObject to start the search from
+	 * @param classes types to be filtered
+	 * @param searchText types to be filtered
+	 * @return
+	 */
+	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, List<Class<?>> classes, String searchText) {
+		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
+		String query = AqlQueryString.getFullTextSearchQuery(typeStrings, searchText);
+		Object result = search(searchRoot, query);
+		List<EObject> resultList = (List<EObject>) result;
+		Object shouldIncludeRoot = search(searchRoot, AqlQueryString.shouldIncludeRootInFullTextSearchResult(typeStrings,searchText));
+		if(Boolean.TRUE.equals(shouldIncludeRoot)) {
+			resultList.add(0,searchRoot);
+		};
+		return resultList; 	
+	}
+
+	/**
+	 * searches for project elements based on passes Aql query
+	 * @param searchRoot the element to start the query from
+	 * @param query the query to be executed
+	 * @return result of the query execution
+	 */
+	public List<EObject> getElementsByQuery(EObject searchRoot, String query) {
+		if(query == null || query.isEmpty()) {
+			return null;
+		}
 		Object result = search(searchRoot, query);
 		return (List<EObject>) result;
 	}
 
-	public List<EObject> getProjectElementsByType(EObject searchRoot,  String typeString) {
-		String query = AqlQueryString.FindByTypeQuery(typeString);
-		Object result = search(searchRoot, query);
-		Object isRootOfSearchedType =search(searchRoot, AqlQueryString.IsSearchRootOfType(typeString));
-		List<EObject> resultList = (List<EObject>) result;
-		if(Boolean.TRUE.equals(isRootOfSearchedType)) {
-			resultList.add(0,searchRoot);
-		};
-		return resultList;
-	}
-
-	
-	public List<EObject> getProjectElementsByType(EObject searchRoot,  List<String> typeStrings) {
-		String query = AqlQueryString.FindByTypeQuery(typeStrings);
-		Object result = search(searchRoot, query);
-		Object isRootOfSearchedType =search(searchRoot, AqlQueryString.IsSearchRootOfType(typeStrings));
-		List<EObject> resultList = (List<EObject>) result;
-		if(Boolean.TRUE.equals(isRootOfSearchedType)) {
-			resultList.add(0,searchRoot);
-		};
-		return resultList;
-	}
-	
-	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, String searchText, Class clazz) {
-		String typeString = getAqlTypeNameFromClass(clazz);
-		return getProjectElementsByFullTextSearch(searchRoot,searchText,typeString); 
-	}
-
-	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, String searchText, List<Class<?>> classes) {
-		List<String> typeStrings = classes.stream().map(c -> getAqlTypeNameFromClass(c)).collect(Collectors.toList());
-		return getProjectElementsByFullTextSearch(searchRoot,typeStrings,searchText); 
-	}
-
-	
-	//TODO refactor, keep just the List version and adapt to it in provider 
-	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot, String searchText, String typeString) {
-		String query = AqlQueryString.getFullTextSearchQuery(searchText,typeString);
-		Object result = search(searchRoot, query);
-		List<EObject> resultList = (List<EObject>) result;
-		Object shouldIncludeRoot = search(searchRoot, AqlQueryString.shouldIncludeRootInSearchResult(searchText,typeString));
-		if(Boolean.TRUE.equals(shouldIncludeRoot)) {
-			resultList.add(0,searchRoot);
-		};
-		return resultList; 
-	}
-
-	public List<EObject> getProjectElementsByFullTextSearch(EObject searchRoot,  List<String> typeStrings, String searchText) {
-		String query = AqlQueryString.getFullTextSearchQuery(searchText,typeStrings);
-		Object result = search(searchRoot, query);
-		List<EObject> resultList = (List<EObject>) result;
-		Object shouldIncludeRoot = search(searchRoot, AqlQueryString.shouldIncludeRootInSearchResult(searchText,typeStrings));
-		if(Boolean.TRUE.equals(shouldIncludeRoot)) {
-			resultList.add(0,searchRoot);
-		};
-		return resultList; 
-	}
-
-	
+	/**
+	 * builds and executes the query passed as string
+	 * @param searchRoot the element to start the query from
+	 * @param query the query to be executed
+	 * @return result of the query execution
+	 */
 	private Object search(EObject searchRoot, String query) {
 			QueryBuilderEngine builder = new QueryBuilderEngine(_queryEnvironment);
 			AstResult astResult = builder.build(query);
@@ -179,15 +184,14 @@ public class AqlSearcher {
 			EvaluationResult evaluationResult = engine.eval(astResult, variables);
 			return evaluationResult.getResult();
 	}
-
-
+	
 	/**
 	 * This method gets type name in a form that is usable in the AQL search query
 	 * e.g. instead of "org.polarsys.capella.core.data.capellacore.NamedElement" AQL needs "capellacore::NamedElement"
 	 * @param clazz class to get the type name of
 	 * @return AQL friendly type name of the class
 	 */
-	private static String getAqlTypeNameFromClass(Class clazz) {
+	private static String getAqlTypeNameFromClass(Class<?> clazz) {
 		String[] packagePathSplits = clazz.getPackage().getName().split("\\.");
 		String lastPackagePathPart = packagePathSplits[packagePathSplits.length - 1];
 		return lastPackagePathPart + "::" + clazz.getSimpleName();
