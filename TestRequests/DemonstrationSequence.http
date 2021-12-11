@@ -1,0 +1,47 @@
+########################################################################
+# This is a sequence of requests that reveals part of the              #
+# 'PUBLI [LAB] Components and exchanges in the logical architecture'   #
+# diagram from Capella sample project 'Level Crossing Traffic Control' #
+########################################################################
+
+# insert your base url here
+@baseUrl = http://localhost:1331/sysml_oslc_server/services/
+
+# text/turtle, application/xml or application/json may be good options
+@accept = application/xml
+
+### get the SP catalog
+GET {{baseUrl}}catalog
+Accept: {{accept}}
+
+### take a look at the service provider (optional)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s
+Accept: {{accept}}
+
+### getting the query capability for SysML Package
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service12/sysmlPackages/query
+Accept: {{accept}}
+
+### getting the logical component Control System (Class in SysML), that contains all of the diagram elements
+### (contained as one of the ownedMembers in the previous response)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/792efbda-9fcc-4b4a-882f-9cd1bf58cc5c
+Accept: {{accept}}
+
+### etting the logical component Control System (Class in SysML), that can be seen on the diagram 
+### (contained as ownedMember in the previous response)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/a84deb77-acdd-4bdf-99f2-68b031fc3203
+Accept: {{accept}}
+
+### getting the Functional Exchange (Connector in SysMl), that is contained in the Control System Component on the diagram 
+###(contained as ownedRelationship in the previous response)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/8404dc12-6242-4b96-8f7b-368d0fb97874
+Accept: {{accept}}
+
+### getting the source Port from the connector
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/263f5701-c1ac-4ea3-bd74-9051badbec4b
+Accept: {{accept}}
+
+### getting the Logical Component
+###(contained as owner in the previous response)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/d634e743-7ef1-429c-91a2-9e947a49596c
+Accept: {{accept}}

@@ -1,0 +1,100 @@
+######################################################################################
+# this file contains basic requests for testing CapellaServer generic endpoints      #
+# queries are tested against Capella sample project 'Level Crossing Traffic Control' #
+######################################################################################
+
+# insert your base url here
+@baseUrl = http://localhost:3333
+
+### get projects (to see the ids)
+GET {{baseUrl}}/projects
+
+
+############################
+# single resource requests #
+############################
+
+### get single object
+GET {{baseUrl}}/api/resource?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=a84deb77-acdd-4bdf-99f2-68b031fc3203
+
+### get single object and info about its types
+GET {{baseUrl}}/api/resource?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=fd4b6574-88bc-4566-be0b-53313c22e3e9&includeTypes=true
+
+
+###############
+# collections #
+###############
+
+### simple request without aql query using pagination - first 5 elements
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=5
+
+### simple request without aql query using pagination - second 5 elements
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=1&limit=5
+
+### simple request without aql query using pagination - fifth 30 elements
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=4&limit=30
+
+### simple request without aql query using pagination - skip all elements
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=100&limit=200
+
+###
+# fulltext search
+###
+
+### find everything with "System" in it
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&fullTextSearch=System
+
+### find everything with "System" in it + pagination
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&fullTextSearch=System&page=2&limit=2
+
+### find everything with "computer board"
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&fullTextSearch=computer%20board
+
+###
+# AQL queries (if executed somewhere else, queries may need to be URL encoded)
+###
+
+### get root contained in a collection (only collections are supported as results)
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=Sequence{self}->select(e | e.id = '4c8b577c-14c7-4e66-9337-c13272537eb5')
+
+### get directly contained children of root
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eContents()
+
+### get elements of type OperationalAnalysis (two variants)
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents(oa::OperationalAnalysis)
+#GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents()->select(e | e.oclIsKindOf(oa::OperationalAnalysis))
+
+### get elements of type Named Element + pagination -- first 10
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=1&limit=10&aqlQuery=self.eAllContents(capellacore::NamedElement)
+
+### get elements whose name contains "movement"
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents()->select(e | e.name.contains('movement'))
+
+### get elements whose name contains "movement" contained in element with id "4fe7f9dd-17f2-4789-b755-e3d1b6da3c9c"
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents()->select(e | e.name.contains('movement') and e.eContainer().id='4fe7f9dd-17f2-4789-b755-e3d1b6da3c9c')
+
+### get elements whose name contains "movement" contained in element with id "4fe7f9dd-17f2-4789-b755-e3d1b6da3c9c" and the name is shorter than 50 characters
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents()->select(e | e.name.contains('movement') and e.name.size() < 50 and e.eContainer().id='4fe7f9dd-17f2-4789-b755-e3d1b6da3c9c')
+
+### simple logical or example
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=self.eAllContents()->select(e | e.name='TO_BE_REVIEWED' or e.name='DRAFT')
+
+
+####################
+# invalid requests #
+####################
+
+### not providing the project name when getting the collection
+GET {{baseUrl}}/api/resourcecollection
+
+### not providing the element name on resource endpoint
+GET {{baseUrl}}/api/resource?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s
+
+### getting elements of project that does not exist
+GET {{baseUrl}}/api/resourcecollection?projectId=nonExistingProject
+
+### getting element that does not exist
+GET {{baseUrl}}/api/resource?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=nonExistingElement
+
+### invalid AQL query (returns null)
+GET {{baseUrl}}/api/resourcecollection?projectId=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&aqlQuery=invalidquery

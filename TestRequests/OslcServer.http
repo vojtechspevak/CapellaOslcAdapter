@@ -1,0 +1,175 @@
+#########################################################################################
+# This is a set of test requests for the OSLC Capella server.                           #
+# The requests are tested using Capella sample project 'Level Crossing Traffic Control' #
+# The tests do not consider selection dialogs, as these are better tested in a browser  #
+#########################################################################################
+
+# insert your base url here
+@baseUrl = http://localhost:1331/sysml_oslc_server/services/
+
+# text/turtle, application/xml or application/json may be good options
+@accept = text/turtle
+
+### service provider catalog
+GET {{baseUrl}}catalog
+Accept: {{accept}}
+
+### Level Crossing Traffic Control service provider
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s
+Accept: {{accept}}
+
+############################
+# basic query capabilities #
+############################
+
+### Elements - some returned resources have more specific types, as they are sub-type of element
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service2/elements/query
+Accept: {{accept}}
+
+### SysmlClasses
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service3/sysmlClasss/query
+Accept: {{accept}}
+
+### Relationships
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service4/relationships/query
+Accept: {{accept}}
+
+### Generalizations (no resources)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service5/generalizations/query
+Accept: {{accept}}
+
+### PortUsages
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service9/portUsages/query
+Accept: {{accept}}
+
+### SysmlPackages
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service12/sysmlPackages/query
+Accept: {{accept}}
+
+### Connectors
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service13/connectors/query
+Accept: {{accept}}
+
+##################
+# ResourceShapes #
+##################
+
+### Element
+GET {{baseUrl}}resourceShapes/element
+Accept: {{accept}}
+
+### SysmlClass
+GET {{baseUrl}}resourceShapes/class
+Accept: {{accept}}
+
+### Relationship
+GET {{baseUrl}}resourceShapes/relationship
+Accept: {{accept}}
+
+### Generalization
+GET {{baseUrl}}resourceShapes/generalization
+Accept: {{accept}}
+
+### PortUsage
+GET {{baseUrl}}resourceShapes/portUsage
+Accept: {{accept}}
+
+### SysmlPackage
+GET {{baseUrl}}resourceShapes/package
+Accept: {{accept}}
+
+### Connector
+GET {{baseUrl}}resourceShapes/connector
+Accept: {{accept}}
+
+#######################
+# pagination requests #
+#######################
+
+### pagination - first page of 2 connectors
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service13/connectors/query?oslc.paging=true&oslc.pageSize=2&page=0
+Accept: {{accept}}
+
+### pagination - fourth page of 20 Connectors = last page there are only 5 of them
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service13/connectors/query?oslc.paging=true&oslc.pageSize=20&page=4
+Accept: {{accept}}
+
+###################
+# single elements #
+###################
+
+### the root project element
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/4c8b577c-14c7-4e66-9337-c13272537eb5
+Accept: {{accept}}
+
+### SysmlClass element
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/d6f0af0c-e60c-4c3a-a859-11302d625cdf
+Accept: {{accept}}
+
+### Connector element
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/d29da33b-a784-40c2-9d11-b65f5231f564
+Accept: {{accept}}
+
+### Port element
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/796590c2-44aa-4c0e-9f3a-bc2b1eb2f0f6
+Accept: {{accept}}
+
+#######################
+# oslc.where requests #
+#######################
+
+### querying SysmlClasses 
+# ?oslc.where=sysml:name="Station information system"
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service3/sysmlClasss/query?oslc.where=sysml:name=%22Station%20information%20system%22
+Accept: {{accept}}
+
+### querying Connectors - in term query
+# ?oslc.where=sysml:name in ["Road detections","Railway detections","Current situation"]
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service13/connectors/query?oslc.where=sysml:name%20in%20[%22Road%20detections%22,%22Railway%20detections%22,%22Current%20situation%22]
+Accept: {{accept}}
+
+### querying Elements - get children of the root
+# ?oslc.where=sysml:owner=<http://localhost:1331/sysml_oslc_server/services/projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/4c8b577c-14c7-4e66-9337-c13272537eb5>
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service2/elements/query?oslc.where=sysml:owner=%3Chttp://localhost:1331/sysml_oslc_server/services/projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/4c8b577c-14c7-4e66-9337-c13272537eb5%3E
+Accept: {{accept}}
+
+### querying Elements - composit query
+# ?oslc.where=sysml:owner=<http://localhost:1331/sysml_oslc_server/services/projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/6edfd3bb-6a92-46dc-b662-2100ab2674b1> and sysml:name!="Temperature Min" and dcterms:identifier in ["bbc953c7-5e0b-4454-a6a9-d949f1d271b5","7e34b60f-f1c6-4007-b015-85789c42b443","3cf289a1-d749-4afb-b52f-76753a22f8fc"]
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service2/elements/query?oslc.where=sysml:owner=%3Chttp://localhost:1331/sysml_oslc_server/services/projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/6edfd3bb-6a92-46dc-b662-2100ab2674b1%3E%20and%20sysml:name!=%22Temperature%20Min%22%20and%20dcterms:identifier%20in%20[%22bbc953c7-5e0b-4454-a6a9-d949f1d271b5%22,%227e34b60f-f1c6-4007-b015-85789c42b443%22,%223cf289a1-d749-4afb-b52f-76753a22f8fc%22]
+Accept: {{accept}}
+
+### querying + pagination - first 2 Elements 
+# ?oslc.where=sysml:name="Data" 
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service2/elements/query?oslc.paging=true&oslc.pageSize=2&page=0&oslc.where=sysml:name=%22Data%22
+Accept: {{accept}}
+
+### querying for 0 elements (criteria that no resource meets)
+# ?oslc.where=sysml:name="noresourceiscalledlikethat"
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service3/sysmlClasss/query?oslc.where=sysml:name=%22noresourceiscalledlikethat%22
+Accept: {{accept}}
+
+
+####################
+# invalid requests #
+####################
+
+### project element that does not exist
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/elements/invalidid
+Accept: {{accept}}
+
+### project element that does not exist
+GET {{baseUrl}}projects/invlaidproject/elements/4c8b577c-14c7-4e66-9337-c13272537eb5
+Accept: {{accept}}
+
+### project element that does not exist on query capability
+GET {{baseUrl}}{{baseUrl}}projects/invlaidproject/service3/sysmlClasss/query
+Accept: {{accept}}
+
+### invalid where query (unsupported attribute)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service3/sysmlClasss/query?oslc.where=dcterms:description=%22Station%20information%20system%22
+Accept: {{accept}}
+
+### invalid where query (bad syntax - missing " at the end)
+GET {{baseUrl}}projects/TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s/service3/sysmlClasss/query?oslc.where=sysml:name=%22Station%20information
+Accept: {{accept}}
+
