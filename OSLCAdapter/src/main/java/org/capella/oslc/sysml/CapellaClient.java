@@ -103,22 +103,22 @@ public class CapellaClient {
 		java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {
 		}.getType();
 		List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
-		if (elementTypes.contains("LogicalComponentPkgImpl")) {
+		if (elementTypes.contains(SysmlPackage.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, SysmlPackage.class);
 		}
-		if (elementTypes.contains("ClassImpl") || elementTypes.contains("LogicalComponentImpl")) {
+		if (elementTypes.contains(SysmlClass.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, SysmlClass.class);
 		}
-		if (elementTypes.contains("ComponentExchangeImpl")) {
+		if (elementTypes.contains(Connector.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, Connector.class);
 		}
-		if (elementTypes.contains("GeneralizationImpl")) {
+		if (elementTypes.contains(Generalization.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, Generalization.class);
 		}
-		if (elementTypes.contains("ComponentPortImpl")) {
+		if (elementTypes.contains(PortUsage.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, PortUsage.class);
 		}
-		if (elementTypes.contains("RelationshipImpl")) {
+		if (elementTypes.contains(Relationship.class.getSimpleName())) {
 			return gson.fromJson(jsonObject, Relationship.class);
 		}
 		return gson.fromJson(jsonObject, Element.class);

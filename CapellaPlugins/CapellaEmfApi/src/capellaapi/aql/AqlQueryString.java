@@ -98,7 +98,7 @@ public class AqlQueryString {
 			return queryByType;
 		}
 		
-		return String.format("(%s and (OrderedSet{%s}->exist(%s))", 
+		return String.format("(%s and (Sequence{%s}->exists(%s))", 
 				queryByType,VARIABLE_NAME,additionalExpression);
 	}
 	

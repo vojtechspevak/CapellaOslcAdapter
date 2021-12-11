@@ -46,7 +46,7 @@ public class LogicalComponent2SysmlClass extends AbstractMapping {
 		target.setIsAbstract(capellaElement.isAbstract());
 		target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
 		setOwnerIfPresent(source, target, linkBaseUrl);
-		addAllCapellaTypes(target,capellaElement.getClass());
+		addAllSysmlTypes(target,getTargetClass());
 		return target;
 	}
 

@@ -36,7 +36,7 @@ public class Generalization2Generalization extends AbstractMapping {
 			target.setTitle(capellaElement.getFullLabel());
 			target.setShortTitle(capellaElement.getLabel());
 			setOwnerIfPresent(source, target, linkBaseUrl);
-			addAllCapellaTypes(target,capellaElement.getClass());
+			addAllSysmlTypes(target,getTargetClass());
 			return target;
 	}
 

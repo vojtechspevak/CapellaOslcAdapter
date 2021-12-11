@@ -42,16 +42,15 @@ public abstract class AbstractMapping implements IMapping {
 	}
 
 	/**
-	 * helper method for adding the types of the original Capella element 
+	 * helper method for adding the types of the resulting SysML element 
 	 * @param target target of the map
-	 * @param capellaElementClass class of the Capella source
 	 */
-	protected static void addAllCapellaTypes(Element target, Class<?> capellaElementClass) {
-		target.addType(capellaElementClass.getSimpleName());
-		capellaElementClass = capellaElementClass.getSuperclass();
-		while (capellaElementClass != null) {
-			target.addType(capellaElementClass.getSimpleName());
-			capellaElementClass = capellaElementClass.getSuperclass();
+	protected static void addAllSysmlTypes(Element target, Class<?> sysmlElementClass) {
+		target.addType(sysmlElementClass.getSimpleName());
+		sysmlElementClass = sysmlElementClass.getSuperclass();
+		while (sysmlElementClass != null) {
+			target.addType(sysmlElementClass.getSimpleName());
+			sysmlElementClass = sysmlElementClass.getSuperclass();
 		}
 	}
 

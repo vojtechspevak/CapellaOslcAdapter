@@ -35,7 +35,7 @@ public class ComponentPort2PortUsage extends AbstractMapping {
 		target.setShortTitle(capellaElement.getName());
 		target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
 		setOwnerIfPresent(source, target, linkBaseUrl);
-		addAllCapellaTypes(target,capellaElement.getClass());
+		addAllSysmlTypes(target,getTargetClass());
 		return target;
 	}
 

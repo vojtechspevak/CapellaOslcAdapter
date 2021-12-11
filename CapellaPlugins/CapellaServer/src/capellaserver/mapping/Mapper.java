@@ -34,6 +34,7 @@ public class Mapper {
 		_mappings.add(new LogicalComponent2SysmlClass());
 		_mappings.add(new ComponentExchange2Connector());
 		_mappings.add(new ComponentPort2PortUsage());
+		_mappings.add(new ModelElement2Element());
 	}
 
 	/**

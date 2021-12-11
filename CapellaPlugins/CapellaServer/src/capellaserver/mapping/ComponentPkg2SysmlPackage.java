@@ -40,7 +40,7 @@ public class ComponentPkg2SysmlPackage extends AbstractMapping {
 		target.setShortTitle(capellaElement.getLabel());
 		target.setAbout(createURI(linkBaseUrl + capellaElement.getId()));
 		setOwnerIfPresent(source, target, linkBaseUrl);
-		addAllCapellaTypes(target,capellaElement.getClass());
+		addAllSysmlTypes(target,getTargetClass());
 		return target;
 	}
 
