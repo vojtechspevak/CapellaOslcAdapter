@@ -64,7 +64,6 @@ public class GenericResourceCollectionServlet extends HttpServlet {
 			ServletHelper.setOkResponse(response);
 		} catch (NoSuchElementException e) {
 			ServletHelper.setErrorResponse(response, e.getMessage());
-			return;
 		}
 
 	}

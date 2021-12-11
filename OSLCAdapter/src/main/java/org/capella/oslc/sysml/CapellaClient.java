@@ -2,17 +2,16 @@ package org.capella.oslc.sysml;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.jena.atlas.logging.Log;
-import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 import org.oasis.oslcop.sysml.Connector;
 import org.oasis.oslcop.sysml.Element;
 import org.oasis.oslcop.sysml.Generalization;
@@ -28,62 +27,25 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Class responsible for fetching and deserializing the resources from the CapellaServer
+ * in case of collections, the elements can be serialized to more specific types than what is the type managed by the QueryCapability
+ * e.g. QueryCapability for Element can contain types including SysmlClass, SysmlPackage, Connector ... as all of these classes are derived from the Element.
+ * This is thanks to the functionality of generic methods deserializeJsonArrayByType and deserializeJsonObjectByType.
+ * If such behavior is undesired, it can be changed and these collections can be simply deserialized like the types that have no sub-types Capabilities implemented:
+ * 		deserializeCollection(jsonObject,ConcreteType.class);
+ * to be strictly of type ConcreteType.
+ */
 public class CapellaClient {
 
-	private static final String API_URL_BASE = "http://localhost:3333";
-	private static final String API_URL_PROJECTS_PATH = "/projects";
-	private static final String API_URL_ELEMENTS_PATH = "/element";
-	private static final String API_URL_SYSML_CLASSES_PATH = "/sysmlclass";
-	private static final String API_URL_RELATIONSHIP_PATH = "/relationship";
-	private static final String API_URL_GENERALIZATION_PATH = "/generalization";
-	private static final String API_URL_SYSML_PACKAGES_PATH = "/sysmlpackage";
-	private static final String API_URL_RESOURCES_PATH = "/resources";
-	private static final String API_URL_PORT_USAGES_PATH = "/portusage";
-	private static final String API_URL_CONNECTOR_PATH = "/connector";
-
-	private static String getApiResourceByIdPathUrl(String projectName, String elementId) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		return API_URL_BASE + API_URL_RESOURCES_PATH + "?projectName=" + projectName + "&elementId=" + elementId
-				+ "&linkBaseUrl=" + linkBaseUrl;
-	}
-
-	private static String getEncodedLinkBaseUrl(String projectName) {
-		String url = OSLC4JUtils.getPublicURI().toString() + "/services/projects/" + projectName + "/elements/";
-		return encodeUrlText(url);
-	}
-
-	private static String getApiSelectionPathUrl(String elementPath, String projectName, String searchTerm) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		String encodedSearchText = encodeUrlText(searchTerm);
-		return API_URL_BASE + elementPath + "?projectName=" + projectName + "&fullTextSearch=" + encodedSearchText
-				+ "&linkBaseUrl=" + linkBaseUrl;
-	}
-
-	private static String getApiCollectionUrl(String elementPath, String projectName, int page, int limit, String where, String prefix) {
-		String linkBaseUrl = getEncodedLinkBaseUrl(projectName);
-		String url = API_URL_BASE + elementPath + "?projectName=" + projectName + "&page=" + page + "&limit=" + limit
-				+ "&linkBaseUrl=" + linkBaseUrl;
-		if(where == null){
-			return url;
-		}
-		String aqlExpression = WhereQueryAqlTransformer.parseQueryToAqlExpression(where, prefix);
-		String encodedAqlExpression = encodeUrlText(aqlExpression);
-		return url + "&aqlExpr=" + encodedAqlExpression;
-	}
-
-	private static String encodeUrlText(String text) {
-		try {
-			return URLEncoder.encode(text, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
-			return URLEncoder.encode(text);
-		}
-	}
-
-	// TODO error handling - capella api not available, different error
+	/**
+	 * Fetches available projects from the CapellaServer
+	 * and constructs ServiceProviderInfos from them
+	 * @return List of ServiceProviderInfo
+	 */
 	public static List<ServiceProviderInfo> getProjects() {
 		List<ServiceProviderInfo> serviceProviderInfos = new ArrayList<ServiceProviderInfo>();
-		String urlString = API_URL_BASE + API_URL_PROJECTS_PATH;
+		String urlString = UrlHelper.API_URL_BASE + UrlHelper.API_URL_PROJECTS_PATH;
 		JsonObject jsonObject = sendGetRequest(urlString);
 		JsonArray projectsJson = jsonObject.get("projects").getAsJsonArray();
 		for (JsonElement p : projectsJson) {
@@ -96,161 +58,222 @@ public class CapellaClient {
 		return serviceProviderInfos;
 	}
 
+	/**
+	 * Fetches element from the CapellaServer and deserializes it according to its type
+	 * @param projectId project to fetch the element from
+	 * @param id identifier of the element to be fetched
+	 * @return the obtained element
+	 */
 	public static Element getElementById(String projectId, String id) {
-		String urlString = getApiResourceByIdPathUrl(projectId, id);
+		String urlString = UrlHelper.getApiResourceByIdPathUrl(projectId, id);
 		JsonObject jsonObject = sendGetRequest(urlString);
-		Gson gson = new Gson();
-		java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {
-		}.getType();
-		List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
-		if (elementTypes.contains(SysmlPackage.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, SysmlPackage.class);
-		}
-		if (elementTypes.contains(SysmlClass.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, SysmlClass.class);
-		}
-		if (elementTypes.contains(Connector.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, Connector.class);
-		}
-		if (elementTypes.contains(Generalization.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, Generalization.class);
-		}
-		if (elementTypes.contains(PortUsage.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, PortUsage.class);
-		}
-		if (elementTypes.contains(Relationship.class.getSimpleName())) {
-			return gson.fromJson(jsonObject, Relationship.class);
-		}
-		return gson.fromJson(jsonObject, Element.class);
+		List<Class<? extends Element>> possibleTypes = Arrays.asList(SysmlPackage.class, SysmlClass.class,
+				Connector.class, Generalization.class, PortUsage.class, Relationship.class, Element.class);
+		return deserializeJsonObjectByType(jsonObject, possibleTypes);
 	}
 
+	/**
+	 * method for querying project elements
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where search terms for the selection dialog
+	 * @param prefix search terms for the selection dialog
+	 * @return found resources of type Element (including sub-types of Element)
+	 */
+	public static List<Element> getProjectElements(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_ELEMENTS_PATH, projectId, page, limit + 1, where, prefix);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		return desrializeElements(jsonObject);
+	}
+	
+	/**
+	 * method for selecting project elements using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type Element (including sub-types of Element)
+	 */
 	public static List<Element> selectProjectElements(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_ELEMENTS_PATH, projectId, terms);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_ELEMENTS_PATH, projectId, terms);
 		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		return desrializeElements(jsonObject);
 	}
-
-	public static List<Element> getProjectElements(String projectId, int page, int limit, String where, String prefix ) {
-		String urlString = getApiCollectionUrl(API_URL_ELEMENTS_PATH, projectId, page, limit + 1,where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Element>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+	
+	/**
+	 * method for querying SysmlClass
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where search terms for the selection dialog
+	 * @param prefix search terms for the selection dialog
+	 * @return found resources of type SysmlClass
+	 */
+	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit, String where,
+			String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_SYSML_CLASSES_PATH, projectId, page, limit + 1, where, prefix);
+		return deserializeCollection(sendGetRequest(urlString),SysmlClass.class);
 	}
-
-	public static List<SysmlClass> getProjectSysmlClasses(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_SYSML_CLASSES_PATH, projectId, page, limit + 1, where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
-	}
-
+	
+	/**
+	 * method for selecting project SysmlClasses using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type SysmlClass
+	 */
 	public static List<SysmlClass> selectProjectSysmlClasses(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_SYSML_CLASSES_PATH, projectId, terms);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlClass>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_SYSML_CLASSES_PATH, projectId, terms);
+		return deserializeCollection(sendGetRequest(urlString),SysmlClass.class);
 	}
 
-	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_RELATIONSHIP_PATH, projectId, page, limit + 1, where, prefix);
+	/**
+	 * method for querying project Relationships
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return found resources of type Relationship (including sub-types of Relationship)
+	 */
+	public static List<Relationship> getProjectRelationships(String projectId, int page, int limit, String where,
+			String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_RELATIONSHIP_PATH, projectId, page, limit + 1, where, prefix);
 		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		List<Class<? extends Relationship>> possibleTypes = Arrays.asList(Generalization.class, Relationship.class);
+		return deserializeJsonArrayByType(jsonObject, possibleTypes);
 	}
 
+	/**
+	 * method for selecting project Relationships using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type Relationship (including sub-types of Relationship)
+	 */
 	public static List<Relationship> selectProjectRelationships(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_RELATIONSHIP_PATH, projectId, terms);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_RELATIONSHIP_PATH, projectId, terms);
 		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Relationship>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		List<Class<? extends Relationship>> possibleTypes = Arrays.asList(Generalization.class, Relationship.class);
+		return deserializeJsonArrayByType(jsonObject, possibleTypes);
 	}
 
-	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_GENERALIZATION_PATH, projectId, page, limit + 1, where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+	/**
+	 * method for querying Generalizations
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return found resources of type Generalization
+	 */
+	public static List<Generalization> getProjectGeneralizations(String projectId, int page, int limit, String where,
+			String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_GENERALIZATION_PATH, projectId, page, limit + 1, where, prefix);
+		return deserializeCollection(sendGetRequest(urlString),Generalization.class);
 	}
 
+	/**
+	 * method for selecting project Generalizations using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type Generalization
+	 */
 	public static List<Generalization> selectProjectGeneralizations(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_GENERALIZATION_PATH, projectId, terms);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Generalization>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_GENERALIZATION_PATH, projectId, terms);
+		return deserializeCollection(sendGetRequest(urlString),Generalization.class);
 	}
 
-	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_SYSML_PACKAGES_PATH, projectId, page, limit + 1, where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+	/**
+	 * method for querying SysmlPackages
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return found resources of type SysmlPackage
+	 */
+	public static List<SysmlPackage> getSysmlPackages(String projectId, int page, int limit, String where,
+			String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_SYSML_PACKAGES_PATH, projectId, page, limit + 1, where, prefix);
+		return deserializeCollection(sendGetRequest(urlString),SysmlPackage.class);
 	}
 
+	/**
+	 * method for selecting project SysmlPackages using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type SysmlPackage
+	 */
 	public static List<SysmlPackage> selectSysmlPackages(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_SYSML_PACKAGES_PATH, projectId, terms);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<SysmlPackage>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_SYSML_PACKAGES_PATH, projectId, terms);
+		return deserializeCollection(sendGetRequest(urlString),SysmlPackage.class);
 	}
 
+	/**
+	 * method for querying PortUsages
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return found resources of type PortUsage
+	 */
 	public static List<PortUsage> getPortUsages(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_PORT_USAGES_PATH, projectId, page, limit + 1, where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		String urlString = getCollectionUrl(UrlHelper.API_URL_PORT_USAGES_PATH, projectId, page, limit + 1, where, prefix);
+		return deserializeCollection(sendGetRequest(urlString),PortUsage.class);
 	}
 
+	/**
+	 * method for selecting project PortUsages using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type PortUsage
+	 */
 	public static List<PortUsage> selectPortUsages(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_PORT_USAGES_PATH, projectId, terms);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<PortUsage>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
-	}
-	
-	public static List<Connector> getConnectors(String projectId, int page, int limit, String where, String prefix) {
-		String urlString = getApiCollectionUrl(API_URL_CONNECTOR_PATH, projectId, page, limit + 1, where, prefix);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Connector>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_PORT_USAGES_PATH, projectId, terms);
+		return deserializeCollection(sendGetRequest(urlString),PortUsage.class);
 	}
 
-	public static List<Connector> selectConnectors(String projectId, String terms) {
-		String urlString = getApiSelectionPathUrl(API_URL_CONNECTOR_PATH, projectId, terms);
-		JsonObject jsonObject = sendGetRequest(urlString);
-		java.lang.reflect.Type listType = new TypeToken<ArrayList<Connector>>() {
-		}.getType();
-		Gson gson = new Gson();
-		return gson.fromJson(jsonObject.get("elements"), listType);
+	/**
+	 * method for querying Connectors
+	 * @param projectId project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return found resources of type Connector
+	 */
+	public static List<Connector> getConnectors(String projectId, int page, int limit, String where, String prefix) {
+		String urlString = getCollectionUrl(UrlHelper.API_URL_CONNECTOR_PATH, projectId, page, limit + 1, where, prefix);
+		return deserializeCollection(sendGetRequest(urlString),Connector.class);
 	}
-	
-	
+
+	/**
+	 * method for selecting project Connectors using selection dialog
+	 * found elements are serialized to the most specific type found
+	 * @param projectId project to fetch the elements from
+	 * @param terms search terms for the selection dialog
+	 * @return found resources of type Connector
+	 */
+	public static List<Connector> selectConnectors(String projectId, String terms) {
+		String urlString = UrlHelper.getApiSelectionPathUrl(UrlHelper.API_URL_CONNECTOR_PATH, projectId, terms);
+		JsonObject jsonObject = sendGetRequest(urlString);
+		return deserializeCollection(jsonObject,Connector.class);
+	}
+
+	/**
+	 * sends a get request to the provided URL 
+	 * and returns JsonObject if the request is successful
+	 * @param urlString URL of the endpoint to perform the request on
+	 * @return JsonObject response
+	 * @throws WebApplicationException if the server responds with status code other than OK
+	 */
 	private static JsonObject sendGetRequest(String urlString) {
 		try {
 			URL url = new URL(urlString);
@@ -266,23 +289,105 @@ public class CapellaClient {
 			throw new WebApplicationException(e.getMessage(), 500);
 		}
 	}
-
-	// TODO decide if other elements should have these as well or keep it just for the element that handles it generically
-	public static SysmlClass getSysmlClassById(String projectId, String id) {
-		try { 
-			URL url = new URL(getApiResourceByIdPathUrl(projectId, id));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			int status = con.getResponseCode();
-			if (status != 200) {
-				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
-			}
-			Gson gson = new Gson();
-			return gson.fromJson(new InputStreamReader(con.getInputStream()), SysmlClass.class);
-		} catch (IOException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
+	
+	/**
+	 * deserialization of a single element to the best suitable type from given possible types
+	 * the possibleTypes need to be sorted from the most specific to super-types 
+	 * (the most specific type is the first element of the array)
+	 * @param <T> generic resulting type of the object
+	 * @param jsonObject json object to be deserialized
+	 * @param possibleTypes possibleTypes Types extending T sorted from the most specific to super-types
+	 * @return deserialized object to its most specific type of possibleTypes 
+	 * @throws WebApplicationException if the obtained json does not have the expected structure
+	 */
+	private static <T> T deserializeJsonObjectByType(JsonObject jsonObject, List<Class<? extends T>> possibleTypes) {
+		Gson gson = new Gson();
+		java.lang.reflect.Type stringListType = new TypeToken<ArrayList<String>>() {
+		}.getType();
+		List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
+		if (elementTypes == null) {
+			throw new WebApplicationException("Unable to parse elements from capella server json response.",
+					Status.INTERNAL_SERVER_ERROR);
 		}
-		return null;
+		for (Class<? extends T> type : possibleTypes) {
+			if (elementTypes.contains(type.getSimpleName())) {
+				return gson.fromJson(jsonObject, type);
+			}
+		}
+		throw new WebApplicationException("Unable to parse elements from capella server json response.",
+				Status.INTERNAL_SERVER_ERROR);
 	}
+
+	/**
+	 * deserialization of elements in a collection to given types
+	 * this enables the results to be returned as the most specific sub-types 
+	 * the possibleTypes need to be sorted from the most specific to super-types 
+	 * in order to deserialize to correct type
+	 * (the most specific type is the first element of the array)
+	 * @param <T> Type of the elements in the resulting array
+	 * @param jsonCollectionObject
+	 * @param possibleTypes Types extending T sorted from the most specific to super-types
+	 * @return list of deserialized elements
+	 * @throws WebApplicationException if the obtained json does not have the expected structure
+	 */
+	private static <T> List<T> deserializeJsonArrayByType(JsonObject jsonCollectionObject,
+			List<Class<? extends T>> possibleTypes) {
+		List<T> result = new ArrayList<T>();
+		JsonArray jsonArray = jsonCollectionObject.getAsJsonArray("elements");
+		if (jsonArray == null) {
+			throw new WebApplicationException("Unable to parse elements from capella server json response.",
+					Status.INTERNAL_SERVER_ERROR);
+		}
+		jsonArray.get(0);
+		for (JsonElement element : jsonArray) {
+			result.add(deserializeJsonObjectByType(element.getAsJsonObject(), possibleTypes));
+		}
+		return result;
+	}
+
+	/**
+	 * method for deserializing collection of elements 
+	 * @param jsonObject object containing the elements
+	 * @return List of type Element (including more specific type)
+	 */
+	private static List<Element> desrializeElements(JsonObject jsonObject){
+		List<Class<? extends Element>> possibleTypes = Arrays.asList(SysmlPackage.class, SysmlClass.class,
+				Connector.class, Generalization.class, PortUsage.class, Relationship.class, Element.class);
+		return deserializeJsonArrayByType(jsonObject, possibleTypes);
+	}
+
+	/**
+	 * deserializes collection to the exact given type
+	 * @param <T> generic type of the resulting objects
+	 * @param jsonObject object containing the elements
+	 * @param elementType type of the resulting objects
+	 * @return List of elements of type T (exactly T)
+	 */
+	private static <T> List<T> deserializeCollection(JsonObject jsonObject, Class<T> elementType){
+		java.lang.reflect.Type listType = TypeToken.getParameterized(ArrayList.class, elementType).getType();
+		Gson gson = new Gson();
+		return gson.fromJson(jsonObject.get("elements"), listType);
+	}
+
+	/**
+	 * gets the URL string from UrlHelper with transformed oslc.where query to AQL expression
+	 * if the oslc.where query is provided
+	 * @param elementPath path of the servlet containing the elements 
+	 * @param projectName project to fetch the elements from
+	 * @param page page number
+	 * @param limit how many elements should be contained in a page
+	 * @param where oslc.where query to filter the resources
+	 * @param prefix prefix for the oslc.where query
+	 * @return constructed URL string for the CapellaServer endpoint 
+	 * with transformed AQL query if the query is provided 
+	 */
+	private static String getCollectionUrl(String elementPath, String projectName, int page, int limit, String where,
+			String prefix) {
+		if (where == null) {
+			return UrlHelper.getApiCollectionUrl(elementPath, projectName, page, limit, null);
+		}
+		String aqlExpression = WhereQueryAqlTransformer.parseQueryToAqlExpression(where, prefix);
+		return UrlHelper.getApiCollectionUrl(elementPath, projectName, page, limit, aqlExpression);
+ 	}
 
 }

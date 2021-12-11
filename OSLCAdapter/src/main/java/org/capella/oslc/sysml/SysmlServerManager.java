@@ -532,7 +532,6 @@ public class SysmlServerManager {
         
         
         // Start of user code getSysmlClass
-        aResource = CapellaClient.getSysmlClassById(projectId,id);
         // End of user code
         return aResource;
     }

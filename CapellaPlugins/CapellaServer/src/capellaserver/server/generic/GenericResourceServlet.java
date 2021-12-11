@@ -1,6 +1,7 @@
 package capellaserver.server.generic;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,7 +37,13 @@ public class GenericResourceServlet extends HttpServlet {
     	}
 
     	GenericResourceService resourceService = new GenericResourceService(request);
-    	EObject element = resourceService.getElementById(projectName, elementId);
+    	EObject element;
+    	try {
+        	element= resourceService.getElementById(projectName, elementId);	
+		} catch (NoSuchElementException e) {
+			ServletHelper.setErrorResponse(response, e.getMessage());
+			return;
+		}
     	if(element == null) {
     		ServletHelper.setErrorResponse(response, "Specified element does not exist");
     		return;
