@@ -68,6 +68,7 @@ public class WhereQueryAqlTransformer {
 		    InTerm inTerm = (InTerm) term;
 		    return transformInTermToAql(inTerm);
 		default:
+			Log.error(WhereQueryAqlTransformer.class, "Unsupported oslc.where query.");
 	        throw new WebApplicationException(new UnsupportedOperationException("Unsupported oslc.where query."),Status.BAD_REQUEST);                
 		}
 	}
@@ -113,6 +114,7 @@ public class WhereQueryAqlTransformer {
 	            operator = " <> ";
 	            break;
 	        default:
+				Log.error(WhereQueryAqlTransformer.class, "Unsupported oslc.where query.");
 	            throw new WebApplicationException(new UnsupportedOperationException("Unsupported oslc.where query."),Status.BAD_REQUEST);                
 	    }
 		return "e."
@@ -134,6 +136,7 @@ public class WhereQueryAqlTransformer {
 	    	case URI_REF:
 	    		return getIdFromUriRef(value.toString());
 	        default:
+				Log.error(WhereQueryAqlTransformer.class, "Unsupported oslc.where query.");
 	            throw new WebApplicationException(new UnsupportedOperationException("Unsupported oslc.where query."),Status.BAD_REQUEST);                
 		}
 	}
@@ -168,6 +171,7 @@ public class WhereQueryAqlTransformer {
         case "identifier":
         	return "id";
         default:
+			Log.error(WhereQueryAqlTransformer.class, "Unsupported oslc.where query.");
             throw new WebApplicationException(new UnsupportedOperationException("Unsupported oslc.where query."),Status.BAD_REQUEST);                
 		}
 	}

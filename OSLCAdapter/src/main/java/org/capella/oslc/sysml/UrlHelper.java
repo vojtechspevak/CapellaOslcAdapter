@@ -88,7 +88,7 @@ public class UrlHelper {
 		try {
 			return URLEncoder.encode(text, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			Log.warn(CapellaClient.class, e.getMessage());
+			Log.warn(UrlHelper.class, e.getMessage());
 			return URLEncoder.encode(text);
 		}
 	}

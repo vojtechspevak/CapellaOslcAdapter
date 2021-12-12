@@ -281,6 +281,7 @@ public class CapellaClient {
 			con.setRequestMethod("GET");
 			int status = con.getResponseCode();
 			if (status != 200) {
+				Log.error(CapellaClient.class, "Unable to fetch elements from capella server. Response status code: " + status);
 				throw new WebApplicationException("Unable to fetch elements from capella server.", status);
 			}
 			return JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
@@ -306,6 +307,7 @@ public class CapellaClient {
 		}.getType();
 		List<String> elementTypes = gson.fromJson(jsonObject.get("type"), stringListType);
 		if (elementTypes == null) {
+			Log.error(CapellaClient.class, "Unable to parse elements from capella server json response: " + jsonObject.toString());
 			throw new WebApplicationException("Unable to parse elements from capella server json response.",
 					Status.INTERNAL_SERVER_ERROR);
 		}
@@ -314,6 +316,7 @@ public class CapellaClient {
 				return gson.fromJson(jsonObject, type);
 			}
 		}
+		Log.error(CapellaClient.class, "Unable to parse elements from capella server json response: " + jsonObject.toString());
 		throw new WebApplicationException("Unable to parse elements from capella server json response.",
 				Status.INTERNAL_SERVER_ERROR);
 	}
@@ -335,6 +338,7 @@ public class CapellaClient {
 		List<T> result = new ArrayList<T>();
 		JsonArray jsonArray = jsonCollectionObject.getAsJsonArray("elements");
 		if (jsonArray == null) {
+			Log.error(CapellaClient.class, "Unable to parse elements from capella server json response: " + jsonCollectionObject.toString());
 			throw new WebApplicationException("Unable to parse elements from capella server json response.",
 					Status.INTERNAL_SERVER_ERROR);
 		}
