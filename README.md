@@ -19,7 +19,7 @@ The elements are provided using the domain of the referenced SysML v2 OSLC serve
 
 Both Capella plugins can be run by placing the content of *ExportedPlugins/* into *dropins/* folder of the Capella installation.
 
-Appart from the plugins itself, the folder *ExportedPlugins/* also contains the additional dependencies required by the plugins, in particular `javax.servelt-api` and `gson`. 
+Apart from the plugins itself, the folder *ExportedPlugins/* also contains the additional dependencies required by the plugins, in particular `javax.servelt-api` and `gson`. 
 
 Once the plugins are installed the **Embedded Server** button for starting/stopping the server should appear in the upper bar.
 
@@ -78,7 +78,7 @@ The CapellaSever Contains 2 endpoints that are unused in the whole OSLC adapter.
 
 
 # CapellaServer API endpoints #
-CapellaServer endpoints are briefly described here _baseurl_ is chosen URL where the server runs like http://localhost:3333.
+CapellaServer endpoints are briefly described here. The _baseurl_ is the chosen URL where the server runs like http://localhost:3333. Use of each of the endpoints can be seen in the sample requests.
 
 
 Endpoint for retrieving the projects that does not expect any parameters:\
@@ -94,29 +94,29 @@ Each of the query capability in the OSLC server has its own endpoint for queryin
 **_baseurl_/portusage**\
 **_baseurl_/sysmlpackage**\
 **_baseurl_/connector**\
-**require parameters**: `projectName` which identifies the project that is queried and `linkBaseUrl` which is the baseUrl of the OSLC server for querying a single resource (specific resource whose identifier is `resid` can be found at `linkBaseUrl/resid`) which is needed for constructing the OSLC resources on the side of CapellaServer. This dependency may be handled otherwise in the future.\ 
+**required parameters**: `projectName` which identifies the project that is queried and `linkBaseUrl` which is the baseUrl of the OSLC server for querying a single resource (specific resource whose identifier is `resid` can be found at `linkBaseUrl/resid`) which is needed for constructing the OSLC resources on the side of CapellaServer. This dependency may be handled otherwise in the future.
+
 **optional parameters**: `limit` and `page` to provide paging capability `fullTextSearch` that is used for simple selection dialogs implementation and `aqlExpr` that is used to filter the capella elements based on additional conditions (oslc.where expressions are transformed to these) for information about AQL, see https://www.eclipse.org/acceleo/documentation/.\
 if both `aqlExpr` and `fullTextSearch` are provided, only `fullTextSearch` is performed.
 
 
 
 
-Endpoint for retrieving a single element:\
+Endpoint for retrieving a single element by id:\
 **_baseurl_/resources**\
-**require parameters**: `projectName`, `linkBaseUrl` as described above and `elementId` which identifies the specific element.
+**required parameters**: `projectName`, `linkBaseUrl` as described above and `elementId` which identifies the specific element.
 
 ## Capella generic endpoints ##
 The additional generic endpoints for retrieving the unmapped elements work in a similar way:
 
-Endpoint for retrieving a single element:\
+Endpoint for retrieving a single element by id:\
 **_baseurl_/api/resource**\
 **require parameters**: `projectName` and `elementId` as described above.
-
 **optional parameters**: `includeTypes` - if provided with value `true`, the element is returned together with infomration about its type and all supertypes.
 
-Endpoint for retrieving a single element:\
+Endpoint for retrieving elements collection:\
 **_baseurl_/api/resourcecollection**\
-**require parameters**: `projectName`, as described above\
+**required parameters**: `projectName`, as described above\
 **optional parameters**: `page`, `limit`, `fulltextsearch` as described above and `aqlQuery` which is a custom AQL query to be executed for retrieving project elements.
 
 
