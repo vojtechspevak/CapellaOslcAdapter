@@ -21,6 +21,9 @@ import org.polarsys.capella.core.data.capellamodeller.Project;
 
 import capellaapi.helpers.ConstHelper;
 
+/**
+ * Class responsible for accessing the project resources
+ */
 public class ProjectResourceManager {
 
 	/**
@@ -102,7 +105,7 @@ public class ProjectResourceManager {
 	 * project which is needed in order to edit the elements (so far it is unused in
 	 * the Api)
 	 * 
-	 * @param project
+	 * @param project project o load the ExecutionManager from
 	 * @return Execution manager
 	 */
 	private ExecutionManager loadExecutionManager(IProject project) {

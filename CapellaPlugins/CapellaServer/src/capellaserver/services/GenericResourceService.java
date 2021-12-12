@@ -18,6 +18,12 @@ public class GenericResourceService extends BaseService {
 		super(request);
 	}
 	
+	/**
+	 * gets project elements using the query provided by the client
+	 * @param projectName name of the project to search in
+	 * @param aqlQuery AQL search query
+	 * @return found elements or null if the query does not return a collection
+	 */
 	public List<EObject> getElements(String projectName, String aqlQuery) {
 		List<EObject> elements;
 		if (aqlQuery == null || aqlQuery.trim().isEmpty()) {
@@ -33,10 +39,10 @@ public class GenericResourceService extends BaseService {
 	}
 
 	/**
-	 * searches for all ele
-	 * @param projectName
-	 * @param searchText
-	 * @return
+	 * searches for elements by a simple full text search using the provided search text 
+	 * @param projectName name of the project to search in
+	 * @param searchText text to search for
+	 * @return found elements
 	 */
 	public List<EObject> getElementsByFullTextSearch(String projectName, String searchText) {
 		List<Class<?>> typeList = new ArrayList<Class<?>>();

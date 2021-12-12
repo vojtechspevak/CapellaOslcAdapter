@@ -10,6 +10,10 @@ import capellaserver.domain.Connector;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
+/**
+ * Sample implementation of a Mapping to be used in the Mapper class
+ * @see AbstractMapping 
+ */
 public class ComponentExchange2Connector extends AbstractMapping {
 
 	public ComponentExchange2Connector() {

@@ -10,6 +10,10 @@ import org.polarsys.capella.core.data.capellacore.NamedElement;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
+/**
+ * Sample implementation of a Mapping to be used in the Mapper class
+ * @see AbstractMapping 
+ */
 public class NamedElement2Element extends AbstractMapping {
 
 	public NamedElement2Element() {

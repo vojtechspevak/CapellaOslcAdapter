@@ -8,6 +8,10 @@ import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 import capellaserver.domain.SysmlPackage;
 
+/**
+ * Sample implementation of a Mapping to be used in the Mapper class
+ * @see AbstractMapping 
+ */
 public class ComponentPkg2SysmlPackage extends AbstractMapping {
 
 	public ComponentPkg2SysmlPackage() {

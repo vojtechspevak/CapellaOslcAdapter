@@ -7,6 +7,10 @@ import org.polarsys.capella.core.data.capellacore.Relationship;
 import capellaserver.domain.Element;
 import capellaserver.domain.Link;
 
+/**
+ * Sample implementation of a Mapping to be used in the Mapper class
+ * @see AbstractMapping 
+ */
 public class Relationship2Relationship extends AbstractMapping {
 
 	public Relationship2Relationship() {
