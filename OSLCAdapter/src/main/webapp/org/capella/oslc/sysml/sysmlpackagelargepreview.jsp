@@ -747,15 +747,15 @@
         </dd>
     </dl>
     <dl class="dl-horizontal">
-        <% method = SysmlPackage.class.getMethod("getDctermsIdentifier"); %>
+        <% method = SysmlPackage.class.getMethod("getIdentifier"); %>
         <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
         <dd>
         <%
-        if (aSysmlPackage.getDctermsIdentifier() == null) {
+        if (aSysmlPackage.getIdentifier() == null) {
             out.write("<em>null</em>");
         }
         else {
-            out.write(aSysmlPackage.getDctermsIdentifier().toString());
+            out.write(aSysmlPackage.getIdentifier().toString());
         }
         %>
         

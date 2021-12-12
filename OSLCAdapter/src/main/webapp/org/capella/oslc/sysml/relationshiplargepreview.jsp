@@ -115,31 +115,28 @@
         
         </dd>
     </dl>
+    
+    
     <dl class="dl-horizontal">
         <% method = Relationship.class.getMethod("getSource"); %>
         <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
         <dd>
-        <ul>
         <%
-        for(Link next : aRelationship.getSource()) {
-            if (next.getValue() == null) {
-                out.write("<li>" + "<em>null</em>" + "</li>");
-            }
-            else {
-                %>
-                <li>
-                <jsp:include page="/org/capella/oslc/sysml/elementtohtml.jsp">
-                    <jsp:param name="resourceUri" value="<%=next.getValue()%>"/> 
-                    </jsp:include>
-                </li>
-                <%
-            }
+        if ((aRelationship.getSource() == null)) {
+            out.write("<em>null</em>");
+        }
+        else {
+            %>
+            <jsp:include page="/org/capella/oslc/sysml/elementtohtml.jsp">
+                <jsp:param name="resourceUri" value="<%=aRelationship.getSource()%>"/> 
+                </jsp:include>
+            <%
         }
         %>
-        </ul>
         
         </dd>
     </dl>
+    
     <dl class="dl-horizontal">
         <% method = Relationship.class.getMethod("getOwningRelatedElement"); %>
         <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
