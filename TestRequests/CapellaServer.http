@@ -1,0 +1,117 @@
+#########################################################################################
+# This is a set of test requests for the plugin Capella server.                         #
+# The requests are tested using Capella sample project 'Level Crossing Traffic Control' #
+#########################################################################################
+
+# insert your base url here
+@baseUrl = http://localhost:3333/
+
+### projects
+GET {{baseUrl}}projects
+
+##############################
+# basic collection endpoints #
+##############################
+
+### Elements
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### SysmlClasses
+GET {{baseUrl}}sysmlclass?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### Relationships
+GET {{baseUrl}}relationship?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### Generalizations (no resources)
+GET {{baseUrl}}generalization?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### PortUsages
+GET {{baseUrl}}portusage?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### SysmlPackages
+GET {{baseUrl}}sysmlpackage?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### Connectors
+GET {{baseUrl}}connector?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+#################################
+# different pagination requests #
+#################################
+
+### pagination - first page of 3 connectors
+GET {{baseUrl}}connector?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=3&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### pagination - fifth page of 4 Classes = last page there are only 3 of them
+GET {{baseUrl}}sysmlclass?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=5&limit=4&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+###################
+# single elements #
+###################
+
+### the root project element
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=4c8b577c-14c7-4e66-9337-c13272537eb5&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### SysmlClass element
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=d6f0af0c-e60c-4c3a-a859-11302d625cdf&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### Connector element
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=d29da33b-a784-40c2-9d11-b65f5231f564&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### Port element
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=796590c2-44aa-4c0e-9f3a-bc2b1eb2f0f6&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+###############################
+# queries with AQL expression #
+###############################
+
+### SysmlClass name='Station information system'
+GET {{baseUrl}}sysmlclass?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+e.name+%3D+%27Station+information+system%27
+
+### Connectors name is one of 'Road detections' ,'Railway detections', 'Current situation'
+GET {{baseUrl}}connector?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+%28+e.name+%3D+%27Road+detections%27+or+e.name+%3D+%27Railway+detections%27+or+e.name+%3D+%27Current+situation%27+%29
+
+### Elements - children of the root
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+e.eContainer%28%29.id+%3D+%274c8b577c-14c7-4e66-9337-c13272537eb5%27
+
+### Elements - composit query - econtainer id = 6edfd3bb-6a92-46dc-b662-2100ab2674b1 and name!=Temperature Min and id is one of in range
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+e.eContainer%28%29.id+%3D+%276edfd3bb-6a92-46dc-b662-2100ab2674b1%27+and+e.name+%3C%3E+%27Temperature+Min%27+and+%28+e.id+%3D+%27bbc953c7-5e0b-4454-a6a9-d949f1d271b5%27+or+e.id+%3D+%277e34b60f-f1c6-4007-b015-85789c42b443%27+or+e.id+%3D+%273cf289a1-d749-4afb-b52f-76753a22f8fc%27+%29
+### AQL + paging first three where name is Data
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=3&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+e.name+%3D+%27Data%27
+
+### querying for a resource with non existing id
+GET {{baseUrl}}sysmlclass?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&aqlExpr=e+%7C+e.name+%3D+%27noresourceiscalledlikethat%27
+
+################################################
+# full text search (used in selection dialogs) #
+################################################
+
+### SysmlClasses that contain "Train"
+GET {{baseUrl}}sysmlclass?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&fullTextSearch=Train
+
+### Fulltext on id b97fca51-a2de-453b-947a-abb4932b7b15
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&fullTextSearch=b97fca51-a2de-453b-947a-abb4932b7b15
+
+### Fulltext on  Level Crossing Traffic Control
+GET {{baseUrl}}element?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&fullTextSearch=Level%20Crossing%20Traffic%20Control
+
+### Fulltext on  Level Crossing Traffic Control for Connectors (no such elements)
+GET {{baseUrl}}connector?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F&fullTextSearch=Level%20Crossing%20Traffic%20Control
+
+####################
+# invalid requests #
+####################
+
+### wrong project name when querying Elements
+GET {{baseUrl}}element?projectName=invalidprojectname&page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### not providing a project name when querying Elements
+GET {{baseUrl}}element?page=0&limit=21&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### wrong project name when querying a single Element
+GET {{baseUrl}}resources?projectName=invalidprojectname&elementId=4c8b577c-14c7-4e66-9337-c13272537eb5&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### non existing id when querying resource
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&elementId=invalidid&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
+
+### not providing an id when querying resource
+GET {{baseUrl}}resources?projectName=TGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s&linkBaseUrl=http%3A%2F%2Flocalhost%3A1331%2Fsysml_oslc_server%2Fservices%2Fprojects%2FTGV2ZWwgQ3Jvc3NpbmcgVHJhZmZpYyBDb250cm9s%2Felements%2F
