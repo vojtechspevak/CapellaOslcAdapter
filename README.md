@@ -110,12 +110,13 @@ The additional generic endpoints for retrieving the unmapped elements work in a 
 
 Endpoint for retrieving a single element:\
 **_baseurl_/api/resource**\
-**require parameters**: `projectName` and `elementId` as described aboce.\
+**require parameters**: `projectName` and `elementId` as described above.
+
 **optional parameters**: `includeTypes` - if provided with value `true`, the element is returned together with infomration about its type and all supertypes.
 
 Endpoint for retrieving a single element:\
 **_baseurl_/api/resourcecollection**\
-**require parameters**: `projectName`, as described above and 
+**require parameters**: `projectName`, as described above\
 **optional parameters**: `page`, `limit`, `fulltextsearch` as described above and `aqlQuery` which is a custom AQL query to be executed for retrieving project elements.
 
 
