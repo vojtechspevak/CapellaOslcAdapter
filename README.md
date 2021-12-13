@@ -57,7 +57,7 @@ Adapter implements very simple selections dialog. Elements description, name and
 The *TestRequests/* folder contains files with *.http* suffix, that can be run using the REST Client extension for VS Code
 https://marketplace.visualstudio.com/items?itemName=humao.rest-client but it should be easy to extract the URLs to be run elsewhere if needed.
 
-All of the files contains requests that are to be run against the Capella sample project **Level Crossing Traffic Control** that can be found at https://download.eclipse.org/capella/samples/5.1.0/ (or navigate on the page to the correct Capella version) as *LevelCrossingTrafficControl.zip*.
+All of the files contain requests that are to be run against the Capella sample project **Level Crossing Traffic Control** that can be found at https://download.eclipse.org/capella/samples/5.1.0/ (or navigate on the page to the correct Capella version) as *LevelCrossingTrafficControl.zip*.
 
 The folder contains:
 
@@ -111,7 +111,7 @@ The additional generic endpoints for retrieving the unmapped elements work in a 
 
 Endpoint for retrieving a single element by id:\
 **_baseurl_/api/resource**\
-**required parameters**: `projectName` and `elementId` as described above.
+**required parameters**: `projectName` and `elementId` as described above.\
 **optional parameters**: `includeTypes` - if provided with value `true`, the element is returned together with infomration about its type and all supertypes.
 
 Endpoint for retrieving elements collection:\
